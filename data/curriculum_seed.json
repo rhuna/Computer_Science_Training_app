@@ -1,0 +1,11 @@
+{
+  "name": "CS Bootcamp Desktop Curriculum Seed",
+  "version": "1.0.0",
+  "tracks": [
+    "C++ Foundations",
+    "Data Structures and Algorithms",
+    "Systems, OS, and Networking",
+    "Professional Engineering Practices"
+  ],
+  "note": "v1 curriculum is compiled into BootcampContent.cpp. This JSON file is included so v2 can move toward file-backed curriculum loading."
+}
