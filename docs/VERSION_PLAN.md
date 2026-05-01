@@ -1,10 +1,8 @@
 # Version Plan
 
-- v7: Multi-language project generator. Current version.
-- v8: Portfolio builder.
-- v9: Git, testing, CI/CD, and deployment lab.
-- v10: Career readiness center.
-- v11: SQLite progress database.
-- v12: Instructor / bootcamp mode.
-- v13: Optional AI tutor mode.
-- v14: Final release polish.
+- v20: Unified workflow and simplified tabs.
+- v21: Verified multi-language exercise packs.
+- v22: Structured test harness and richer failure feedback.
+- v23: Content authoring tools.
+- v24: Adaptive study planner.
+- v25: Stable release candidate.

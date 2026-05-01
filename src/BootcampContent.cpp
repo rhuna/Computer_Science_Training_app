@@ -280,7 +280,72 @@ QVector<Module> BootcampContent::createDefaultModules()
         }
     });
 
-    return modules;
+
+    modules.push_back(Module{
+        "m12_professional_content_pack",
+        "12 - Professional Content Pack Expansion",
+        "Junior to Professional",
+        "A v15 expansion module with deeper lessons, drills, quizzes, capstones, and role-specific practice loops.",
+        {
+            lesson("l_v15_debugging_ladder", "Debugging Ladder: Reproduce, Isolate, Fix, Verify", "Build professional debugging habits.", "Professional debugging uses a repeatable ladder: reproduce the issue, collect the exact error, isolate the failing layer, create the smallest test, patch the root cause, and verify with a regression check.", {"Write reproduction steps", "Identify the failing layer", "Create a minimal failing case", "Patch root cause", "Add regression check"}, {"Turn one old build error into a debugging note", "Write a before/after fix explanation", "Add a test or manual verification checklist"}),
+            lesson("l_v15_language_comparison", "Language Comparison Matrix", "Know when to use each language.", "Compare C++, Python, JavaScript, TypeScript, Java, C#, Go, Rust, SQL, and Kotlin by runtime, common jobs, package tooling, strengths, weaknesses, and portfolio uses.", {"Name each runtime", "Choose a language for a project", "Explain package tools", "Compare static and dynamic typing", "Describe deployment shape"}, {"Pick three languages for one problem", "Explain why SQL is specialized", "Compare C++ and Rust for systems work"}),
+            lesson("l_v15_professional_readme", "Professional README Pattern", "Document projects like a developer.", "A strong README explains the problem, features, tech stack, architecture, setup, tests, screenshots, known limitations, and future improvements.", {"Problem statement", "Feature list", "Setup steps", "Architecture notes", "Testing notes"}, {"Rewrite one README", "Add a screenshot plan", "Add limitations and future work"})
+        },
+        {
+            exercise("ex_v15_refactor_journal", "Refactor Journal", "Professional", "Improve one working exercise with better names, structure, error handling, and tests. Write a journal explaining the improvement.", "// Refactor without changing behavior.\n// Add notes: what changed, why it changed, how you verified it.\n", "Refactoring, verification, documentation"),
+            exercise("ex_v15_cross_language_api_client", "Same API Client in Three Languages", "Intermediate", "Build a tiny API client in Python, TypeScript, and C# or Java. Compare error handling and package tooling.", "// Fetch JSON, validate required fields, and print a summary.\n", "HTTP, JSON, packages, language comparison"),
+            exercise("ex_v15_production_checklist", "Production Readiness Checklist", "Professional", "Create a production readiness checklist for one capstone: tests, logs, errors, docs, security, backup, release, and rollback.", "// Output should be a Markdown checklist.\n", "Reliability, release discipline, professional communication")
+        },
+        {
+            quiz("q_v15_readme", "What makes a README useful to another developer?", {"Clear purpose, setup, usage, architecture, tests, and limitations", "Only a project title", "A screenshot with no instructions", "A private note to yourself"}, 0, "A README should help another person understand, run, evaluate, and maintain the project."),
+            quiz("q_v15_debugging", "Which debugging step should happen before changing code?", {"Reproduce and isolate the problem", "Rename random files", "Delete the build folder forever", "Turn off all warnings"}, 0, "You need a reproducible failure and a likely failing layer before a disciplined fix."),
+            quiz("q_v15_language", "Which language is primarily used to query relational databases?", {"SQL", "C++", "Kotlin", "Rust"}, 0, "SQL is the standard language for querying relational databases.")
+        },
+        {
+            project("p_v15_professional_content_capstone", "Professional Content Pack Capstone", "Portfolio Expansion", "Upgrade one project with documentation, tests, a release checklist, security notes, role-specific README, and demo plan.", {"Improved README", "Test or QA checklist", "Architecture notes", "Release checklist", "Security/reliability notes", "Demo script"}, {"CI workflow", "Docker plan", "Installer/package", "Mock interview explanation", "Before/after refactor notes"})
+        }
+    });
+
+    modules.push_back(Module{
+        "m13_role_specialization_drills",
+        "13 - Role Specialization Drills",
+        "Career Track Intensive",
+        "Focused practice loops for backend, systems, data/AI, cloud/DevOps, security-minded development, and game/simulation paths.",
+        {
+            lesson("l_role_backend", "Backend/API Drill Path", "Prepare for API-heavy jobs.", "Backend work combines HTTP, validation, database access, authentication, logs, tests, and deployment.", {"Design endpoint", "Validate input", "Use database", "Handle errors", "Write tests"}, {"Design a users API", "Write validation rules", "Create a log plan"}),
+            lesson("l_role_systems", "C++ Desktop and Systems Drill Path", "Build native software discipline.", "Systems and desktop work requires build knowledge, memory awareness, packaging, file handling, performance thinking, and platform-specific troubleshooting.", {"CMake target", "Qt page", "File IO", "Threading concept", "Packaging script"}, {"Explain a CMakeLists file", "Package a Qt app", "Profile a slow loop"}),
+            lesson("l_role_data_ai", "Data/AI Drill Path", "Prepare for automation and applied AI work.", "Data/AI engineering starts with clean inputs, repeatable transformations, evaluation, and careful use of models.", {"Clean data", "Query SQL", "Call API", "Evaluate output", "Document assumptions"}, {"Clean a CSV", "Design a RAG eval set", "Write an automation script"})
+        },
+        {
+            exercise("ex_role_backend_api_design", "Backend API Design Review", "Role Drill", "Design endpoints, request/response bodies, validation rules, error responses, and test cases for a study-progress API.", "// Include endpoints for profiles, lessons, attempts, and reports.\n", "Backend design, REST, validation"),
+            exercise("ex_role_systems_release", "C++ Desktop Release Drill", "Role Drill", "Create a release plan for a Qt desktop app including dependencies, installer notes, logs, settings, and support checklist.", "// Include build command, deploy command, smoke test, and rollback plan.\n", "C++, Qt, release engineering"),
+            exercise("ex_role_ai_eval", "AI Answer Evaluation Drill", "Role Drill", "Create an evaluation checklist for an AI tutor answer: correctness, helpfulness, safety, and next steps.", "// Score an answer from 1-5 in each category.\n", "AI evaluation, quality control")
+        },
+        {
+            quiz("q_role_backend", "What belongs in a robust API error response?", {"Clear status, safe message, optional code, and traceable context", "A raw database password", "Only a blank page", "Random HTML"}, 0, "Professional APIs return useful errors without leaking secrets."),
+            quiz("q_role_systems", "Why does packaging matter for desktop apps?", {"Users need the executable and required runtime files together", "It changes the language", "It removes all bugs", "It replaces source control"}, 0, "A desktop release must include required DLLs/plugins/assets so it runs on another machine."),
+            quiz("q_role_ai_eval", "Why evaluate AI-assisted outputs?", {"Models can be wrong, incomplete, or overconfident", "Evaluation is only for math", "It makes code compile automatically", "It replaces learning"}, 0, "AI outputs need review just like code, documentation, and requirements.")
+        },
+        {
+            project("p_role_specialization_bundle", "Role Specialization Portfolio Bundle", "Career Track", "Build three artifacts for one target role: a technical project, a design document, and a professional explanation/demo.", {"Target role selected", "Technical artifact", "Design doc", "Demo script", "Resume bullets"}, {"Mock interview", "CI workflow", "Architecture diagram", "Security/reliability notes"})
+        }
+    });
+
+    // v21 expands every module quiz bank so the Quiz Trainer has more depth per level.
+    for (Module& module : modules)
+    {
+        module.quiz.push_back(quiz(module.id + "_q_objective", "What is the best way to prove you understand the current module objective?", {"Memorize one phrase", "Explain it, build a small example, run it, and verify the output", "Skip practice", "Only read the title"}, 1, "Professional learning requires explanation, implementation, verification, and reflection."));
+        module.quiz.push_back(quiz(module.id + "_q_checklist", "How should you treat a checklist item in this bootcamp?", {"As a vague reminder", "As a concrete task that needs evidence", "As optional decoration", "As a replacement for coding"}, 1, "v21 keeps checklist items into evidence-based tasks: define, implement or trace, verify, and write notes."));
+        module.quiz.push_back(quiz(module.id + "_q_practice", "What should happen before you write the full solution to a practice exercise?", {"Write input/output examples", "Delete the prompt", "Randomly copy code", "Ignore edge cases"}, 0, "Input/output examples clarify what correct behavior means before implementation."));
+        module.quiz.push_back(quiz(module.id + "_q_verify", "What does the Exercise Runner verifier look for in v21 starter exercises?", {"A matching expected output token", "A specific wallpaper", "A closed editor", "A portfolio screenshot"}, 0, "v21 verified exercise packs print expected PASS_* tokens so the app can verify correctness after running code."));
+        module.quiz.push_back(quiz(module.id + "_q_notes", "Why are notes connected to the selected lesson/exercise context?", {"To keep reflection attached to the exact work being studied", "To hide mistakes", "To replace tests", "To remove quizzes"}, 0, "Contextual notes make review useful because they show what confused you in a specific lesson or exercise."));
+        module.quiz.push_back(quiz(module.id + "_q_debug", "A professional debugging workflow starts with what?", {"Reproduce the issue", "Change every file", "Assume the compiler is wrong", "Skip verification"}, 0, "You need a reproducible failure before you can isolate, fix, and verify a bug."));
+        module.quiz.push_back(quiz(module.id + "_q_transfer", "Why does this app support multiple languages for CS topics?", {"Core CS ideas transfer across syntax", "Every company uses only one language", "It avoids algorithms", "It removes the need for testing"}, 0, "Variables, data structures, algorithms, APIs, databases, and debugging transfer across language ecosystems."));
+        module.quiz.push_back(quiz(module.id + "_q_mastery", "What is the best evidence of mastery?", {"Working code plus a clear explanation of why it works", "A checked box with no work", "A long file name", "A guessed quiz answer"}, 0, "Mastery combines correct implementation, verification, and explanation."));
+        module.quiz.push_back(quiz(module.id + "_q_v21_pack", "What should a v21 verified exercise pack contain?", {"Runnable starter code, a run script, a test/check script, README guidance, and the expected PASS token", "Only a blank folder", "Only screenshots", "Only career advice"}, 0, "A verified pack should teach the workflow and provide repeatable evidence that the solution runs."));
+        module.quiz.push_back(quiz(module.id + "_q_v21_fail", "If verification fails, what should you inspect first?", {"The actual console output compared with the expected PASS token", "The app icon", "The portfolio tab", "The Windows wallpaper"}, 0, "The fastest debugging step is comparing expected output with actual output, then fixing the program or test command."));
+        module.quiz.push_back(quiz(module.id + "_q_v21_rewrite", "After a starter exercise verifies correctly, what is the professional next step?", {"Replace the starter with your own implementation while preserving the same expected behavior", "Delete the tests", "Stop learning the topic", "Change the token only"}, 0, "Starter packs prove the workflow. Mastery comes from implementing the same behavior yourself and re-verifying it."));
+    }    return modules;
 }
 
 QVector<LanguageTrack> BootcampContent::createLanguageTracks()

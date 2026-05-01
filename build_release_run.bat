@@ -9,4 +9,5 @@ cmake -S . -B build -G "MinGW Makefiles" -DCMAKE_PREFIX_PATH=%QT_PREFIX% -DCMAKE
 if errorlevel 1 exit /b 1
 cmake --build build
 if errorlevel 1 exit /b 1
+if exist "%QT_PREFIX%\bin\windeployqt.exe" "%QT_PREFIX%\bin\windeployqt.exe" build\%APP_NAME%.exe
 build\%APP_NAME%.exe

@@ -1,33 +1,21 @@
-# Roadmap to Completion
+# Roadmap After v21
 
-## v7 - Multi-Language Project Generator
+## v21 - Verified Exercise Packs
 
-Current version. Adds a desktop generator that creates starter repos for the major language tracks.
+Current release. Adds runnable starter packs across the major language tracks with expected output tokens and verification documentation.
 
-## v8 - Portfolio Builder
+## v22 - Real Test Harness Upgrade
 
-Add a portfolio dashboard, capstone planner, screenshots field, README quality checklist, and resume-bullet generator starter.
+Add deeper validation beyond output tokens: input/output cases, per-exercise expected files, structured JSON test results, and better failure explanations inside the UI.
 
-## v9 - Git, Testing, CI/CD, and Deployment Lab
+## v23 - Lesson Authoring and Content Editor
 
-Add Git workflows, branching labs, pull-request practice, unit/integration testing labs, Docker basics, and GitHub Actions templates.
+Add an in-app editor for lessons, objectives, checklist steps, quiz questions, and verified exercise metadata.
 
-## v10 - Career Readiness Center
+## v24 - Adaptive Study Planner
 
-Add role-based readiness scores, interview prep, system design drills, coding challenge plans, and junior developer checklist.
+Use progress, quiz misses, failed verification attempts, and notes to recommend the next lesson, exercise, and review session.
 
-## v11 - SQLite Progress Database
+## v25 - Professional Final QA
 
-Replace JSON progress with SQLite profiles, streaks, skill mastery scores, spaced repetition, and historical progress charts.
-
-## v12 - Instructor / Bootcamp Mode
-
-Add cohort management, assignment due dates, rubrics, instructor notes, and exportable progress reports.
-
-## v13 - Optional AI Tutor Mode
-
-Add optional AI-assisted hints, code explanations, quiz generation, debugging help, and study planning.
-
-## v14 - Final Release Polish
-
-Add installer packaging, app icon, splash screen, automated smoke tests, help center, and final documentation.
+Full app polish, installer-ready packaging, expanded smoke tests, and a locked stable curriculum pack.

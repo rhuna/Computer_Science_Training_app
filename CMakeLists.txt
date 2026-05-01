@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.24)
 # CSBootcampDesktop is a Qt Widgets desktop application written in modern C++.
 # The project is intentionally structured like a professional app so future versions
 # can add modules without replacing this foundation.
-project(CSBootcampDesktop VERSION 7.0.0 LANGUAGES CXX)
+project(CSBootcampDesktop VERSION 21.0.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -14,18 +14,19 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Widgets Sql)
 
 add_executable(CSBootcampDesktop
     src/main.cpp
     src/MainWindow.cpp
     src/BootcampContent.cpp
     src/ProgressStore.cpp
+    resources.qrc
 )
 
 target_include_directories(CSBootcampDesktop PRIVATE include)
 
-target_link_libraries(CSBootcampDesktop PRIVATE Qt6::Widgets)
+target_link_libraries(CSBootcampDesktop PRIVATE Qt6::Widgets Qt6::Sql)
 
 # On Windows, make the release build start like a normal desktop app.
 if(WIN32)
@@ -48,10 +49,97 @@ add_custom_command(TARGET CSBootcampDesktop POST_BUILD
             $<TARGET_FILE_DIR:CSBootcampDesktop>/examples
 )
 
-# v7 also ships project templates so the generator can create starter repos
+# v8 keeps shipping project templates and portfolio exports. v9 adds devops templates below
 # from the same folder layout used by the curriculum examples.
 add_custom_command(TARGET CSBootcampDesktop POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
             ${CMAKE_SOURCE_DIR}/project_templates
             $<TARGET_FILE_DIR:CSBootcampDesktop>/project_templates
+)
+
+# v9 ships reusable engineering workflow templates for CI, Docker, and release readiness.
+add_custom_command(TARGET CSBootcampDesktop POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_SOURCE_DIR}/devops_templates
+            $<TARGET_FILE_DIR:CSBootcampDesktop>/devops_templates
+)
+
+# v11 ships schema reference files for the new SQLite progress database.
+add_custom_command(TARGET CSBootcampDesktop POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_SOURCE_DIR}/database_templates
+            $<TARGET_FILE_DIR:CSBootcampDesktop>/database_templates
+)
+
+# v12 ships instructor templates for cohort assignment and learner progress reviews.
+add_custom_command(TARGET CSBootcampDesktop POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_SOURCE_DIR}/instructor_templates
+            $<TARGET_FILE_DIR:CSBootcampDesktop>/instructor_templates
+)
+
+
+# v13 ships optional AI tutor prompt templates. The app still works offline; these
+# files document how to connect the tutor workflow to a local or hosted model later.
+add_custom_command(TARGET CSBootcampDesktop POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_SOURCE_DIR}/ai_tutor_templates
+            $<TARGET_FILE_DIR:CSBootcampDesktop>/ai_tutor_templates
+)
+
+# v14 ships release templates and productization docs beside the app for offline use.
+add_custom_command(TARGET CSBootcampDesktop POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_SOURCE_DIR}/release_templates
+            $<TARGET_FILE_DIR:CSBootcampDesktop>/release_templates
+)
+
+# v15 ships the professional content pack library beside the app for offline use.
+add_custom_command(TARGET CSBootcampDesktop POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_SOURCE_DIR}/content_packs
+            $<TARGET_FILE_DIR:CSBootcampDesktop>/content_packs
+)
+
+
+# v16 ships code attempt tracking templates for portfolio review, debugging history,
+# and instructor/self-review workflows.
+add_custom_command(TARGET CSBootcampDesktop POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_SOURCE_DIR}/attempt_templates
+            $<TARGET_FILE_DIR:CSBootcampDesktop>/attempt_templates
+)
+
+# v17 ships model adapter templates for connecting the offline tutor workflow to
+# hosted or local models while keeping provider settings out of source control.
+add_custom_command(TARGET CSBootcampDesktop POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_SOURCE_DIR}/model_adapter_templates
+            $<TARGET_FILE_DIR:CSBootcampDesktop>/model_adapter_templates
+)
+
+add_custom_command(TARGET CSBootcampDesktop POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_SOURCE_DIR}/docs
+            $<TARGET_FILE_DIR:CSBootcampDesktop>/docs
+)
+
+# v18 ships capstone and certification templates for final completion mode.
+add_custom_command(TARGET CSBootcampDesktop POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_SOURCE_DIR}/capstone_templates
+            $<TARGET_FILE_DIR:CSBootcampDesktop>/capstone_templates
+)
+
+add_custom_command(TARGET CSBootcampDesktop POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_SOURCE_DIR}/certification_templates
+            $<TARGET_FILE_DIR:CSBootcampDesktop>/certification_templates
+)
+
+# v20 ships advanced learning packs for senior-level CS extension work.
+add_custom_command(TARGET CSBootcampDesktop POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_SOURCE_DIR}/advanced_learning_packs
+            $<TARGET_FILE_DIR:CSBootcampDesktop>/advanced_learning_packs
 )

@@ -29,3 +29,8 @@ Real-world tickets, bug fixes, feature requests, and code review practice.
 
 ## v10 - Complete Bootcamp Platform
 Multi-profile support, rubric scoring, exportable reports, and installer packaging.
+
+
+## v17 - Local and Hosted Model Adapter
+
+Adds provider settings, prompt previews, Offline Tutor fallback, OpenAI/Ollama/private-model scaffolding, AI tutor review history, and exportable adapter reports.

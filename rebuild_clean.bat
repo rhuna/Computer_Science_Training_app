@@ -18,6 +18,10 @@ if errorlevel 1 goto fail
 cmake --build build
 if errorlevel 1 goto fail
 
+if exist "%QT_PREFIX%\bin\windeployqt.exe" (
+    "%QT_PREFIX%\bin\windeployqt.exe" build\%APP_NAME%.exe
+)
+
 if exist build\%APP_NAME%.exe (
     echo.
     echo Build succeeded.
