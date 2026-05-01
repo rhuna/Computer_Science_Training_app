@@ -1,106 +1,84 @@
-# CS Bootcamp Desktop v1
+# CS Bootcamp Desktop v7
 
-A full C++/Qt desktop application that turns computer science into a guided bootcamp path. It is built to feel like the Cybersecurity Training Lab style: a real desktop repo, versionable, expandable, and structured for future professional upgrades.
+A professional-style C++/Qt desktop application for learning computer science like a serious bootcamp. The app itself is written in C++, but the curriculum is not limited to C++: it includes major industry language tracks, career paths, an exercise runner, an algorithm visualizer, and now a multi-language project generator.
 
-## What v1 includes
+v7 builds on v6 and adds the **Multi-Language Project Generator**.
 
-- Dashboard with completion progress
-- Curriculum map by module
-- Lessons with objectives, explanations, checklists, and practice prompts
-- Coding exercises with starter code and expected concepts
-- Quiz trainer with answer checking and explanations
-- Portfolio project track
-- Local progress persistence using JSON
-- Notes system tied to the current bootcamp item
-- CMake project structure
-- Windows build/run scripts
-- Professional docs and roadmap
+## What v7 Adds
 
-## Bootcamp path
+- New **Project Generator** page in the desktop app.
+- Generates starter repos for C++, Python, JavaScript, TypeScript, Java, C#, Go, Rust, SQL, and Kotlin.
+- Each generated project includes a README, source folder, test/validation command, learning-goals doc, and Windows run/test scripts.
+- Supports project types such as CLI Fundamentals Lab, API/Backend Starter, Data Structures Practice Pack, Testing and Debugging Lab, and Portfolio Capstone Starter.
+- Keeps the v6 Algorithm Visualizer, v5 deep curriculum, v4 Exercise Runner, Language Workspace, progress tracker, notes system, and multi-language tracks intact.
 
-1. C++ Foundations
-2. Data Structures and Algorithms
-3. Systems, OS, and Networking
-4. Professional Engineering Practices
-5. Capstone portfolio app
+## Major Curriculum Areas
 
-## Windows setup
+1. Computer Science Foundations
+2. Programming Core Across Languages
+3. Data Structures and Algorithms
+4. Systems, OS, Networking, and Databases
+5. Software Engineering and Architecture
+6. Specializations: Web, Mobile, AI, Games, Security, Cloud
+7. Web Engineering: Frontend, Backend, APIs, and Auth
+8. Data, AI, Automation, and RAG Engineering
+9. Secure Coding, Reliability, and Defensive Engineering
+10. Cloud, DevOps, CI/CD, Containers, and Deployment
+11. Capstone, Portfolio, Interview, and Career Readiness
 
-Install:
+## Language Tracks
 
-- Visual Studio 2022 or MSYS2 MinGW
-- Qt 6 for your compiler kit
-- CMake 3.24+
+- C++
+- Python
+- JavaScript
+- TypeScript
+- Java
+- C#
+- Go
+- Rust
+- SQL
+- Kotlin
 
-This repo defaults to Qt paths similar to your previous projects. Edit the `QT_PREFIX` value in the batch files if your Qt install is somewhere else.
+## Build on Windows
 
-## Build with MinGW Qt
+The default scripts assume this Qt layout:
+
+```bat
+C:\Qt\6.11.0\mingw_64
+C:\Qt\Tools\mingw1310_64\bin
+```
+
+Run:
 
 ```bat
 rebuild_clean.bat
 ```
 
-or:
+If your Qt path is different, update `QT_PREFIX` and `MINGW_BIN` inside the `.bat` files.
 
-```bat
-build_release_run.bat
+## Vulkan Warning
+
+If you see this during configure:
+
+```txt
+Could NOT find WrapVulkanHeaders (missing: Vulkan_INCLUDE_DIR)
 ```
 
-## Manual CMake build
+that is usually only an optional Qt warning for this Widgets app. Continue to the first real compiler or linker error if the build stops.
 
-```bat
-cmake -S . -B build -G "MinGW Makefiles" -DCMAKE_PREFIX_PATH=C:\Qt\6.11.0\mingw_64 -DCMAKE_BUILD_TYPE=Release
-cmake --build build
-build\CSBootcampDesktop.exe
-```
+## Project Generator Notes
 
-## Recommended learning workflow
+The Project Generator writes files into `generated_projects` beside the executable by default. You can choose another output folder.
 
-Use the app in this order:
+Generated projects are intentionally small but professional: they give you a clean place to practice, run, test, document, and eventually push to GitHub.
 
-1. Open Curriculum Map.
-2. Pick the first module.
-3. Read the first lesson.
-4. Mark the lesson complete.
-5. Do the matching exercise.
-6. Use the Quiz Trainer.
-7. Start the portfolio project.
-8. Write notes for what confused you.
-9. Move forward only after you can explain the topic out loud.
+## Main Version Roadmap
 
-## Local save data
-
-Progress is stored in your app data folder through Qt's `QStandardPaths::AppDataLocation` as `progress.json`.
-
-## Repo structure
-
-```text
-CSBootcampDesktop_v1/
-  CMakeLists.txt
-  README.md
-  rebuild_clean.bat
-  build_release_run.bat
-  build_debug_run.bat
-  run_app.bat
-  include/
-    BootcampContent.h
-    MainWindow.h
-    ProgressStore.h
-  src/
-    BootcampContent.cpp
-    MainWindow.cpp
-    ProgressStore.cpp
-    main.cpp
-  data/
-    curriculum_seed.json
-  docs/
-    ARCHITECTURE.md
-    ROADMAP.md
-    VERSION_PLAN.md
-  scripts/
-    clean_build_tree.bat
-```
-
-## Versioning direction
-
-This v1 is intentionally a strong foundation. Future versions should add features without removing existing functionality.
+- v7: Multi-language project generator
+- v8: Portfolio builder
+- v9: Git/testing/CI/deployment lab
+- v10: Career readiness center
+- v11: SQLite progress database
+- v12: Instructor mode
+- v13: Optional AI tutor mode
+- v14: Final release polish

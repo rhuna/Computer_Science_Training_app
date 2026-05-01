@@ -1,11 +1,14 @@
 {
-  "name": "CS Bootcamp Desktop Curriculum Seed",
-  "version": "1.0.0",
-  "tracks": [
-    "C++ Foundations",
-    "Data Structures and Algorithms",
-    "Systems, OS, and Networking",
-    "Professional Engineering Practices"
+  "app": "CS Bootcamp Desktop",
+  "version": "7.0.0",
+  "focus": "Multi-Language Project Generator",
+  "languages": ["C++", "Python", "JavaScript", "TypeScript", "Java", "C#", "Go", "Rust", "SQL", "Kotlin"],
+  "v7_generator_project_types": [
+    "CLI Fundamentals Lab",
+    "API / Backend Starter",
+    "Data Structures Practice Pack",
+    "Testing and Debugging Lab",
+    "Portfolio Capstone Starter"
   ],
-  "note": "v1 curriculum is compiled into BootcampContent.cpp. This JSON file is included so v2 can move toward file-backed curriculum loading."
+  "completion_target": "v14"
 }

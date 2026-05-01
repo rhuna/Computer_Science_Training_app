@@ -1,85 +1,31 @@
-# Roadmap
+# CS Bootcamp Desktop Roadmap
 
-## v1 - Foundation
+## v1 - C++ Professional Track Foundation
+C++/Qt desktop shell, curriculum, progress, notes, exercises, quizzes, projects.
 
-- Desktop Qt shell
-- Built-in curriculum
-- Lessons
-- Exercises
-- Quiz trainer
-- Portfolio projects
-- Progress persistence
-- Notes
+## v2 - Multi-Language CS Bootcamp
+Expanded CS-wide curriculum, major language tracks, and career path maps.
 
-## v2 - Better Curriculum Experience
+## v4 - Language Workspace
+Per-language command templates, setup checks, starter files, and first projects.
 
-- Expand lessons to 50+ items
-- Add daily bootcamp schedule
-- Add estimated completion time
-- Add prerequisite relationships
-- Add search/filter for lessons
-- Add module completion badges
+## v4 - Exercise Runner
+Compile/run C++, Python, Node, Java, C#, Go, Rust exercise files and capture output.
 
-## v3 - Code Practice Workspace
+## v5 - Quiz and Spaced Repetition
+Question bank, weak area detection, daily review queue.
 
-- Save exercise attempts
-- Add syntax highlighting
-- Add solution reveal panel
-- Add guided hints
-- Add file templates for exercises
+## v6 - Interview Prep Mode
+DSA patterns, timed drills, hints, solution explanations, and complexity tracking.
 
-## v4 - Local Compile and Run
+## v7 - Portfolio Builder
+Capstone templates, README generator, architecture checklist, GitHub release checklist.
 
-- Configure compiler path
-- Compile exercise snippets
-- Capture stdout/stderr
-- Add build error explanations
-- Add simple automated checks
+## v8 - Database-Backed Progress
+SQLite progress store with attempts, scores, notes, streaks, and searchable history.
 
-## v5 - Data Structures Visual Lab
+## v9 - Professional Simulation Mode
+Real-world tickets, bug fixes, feature requests, and code review practice.
 
-- Sorting visualizer
-- Stack/queue visualizer
-- Tree traversal visualizer
-- Graph BFS/DFS visualizer
-- Complexity comparison panel
-
-## v6 - Professional Project Studio
-
-- Guided capstone builder
-- Project requirement checklist
-- Architecture review checklist
-- Release packaging checklist
-- GitHub README generator
-
-## v7 - Interview Trainer
-
-- LeetCode-style question bank
-- Timed sessions
-- Pattern tagging
-- Big-O answer grading
-- Missed problem review
-
-## v8 - Systems Lab
-
-- Threading demos
-- File system demos
-- Socket demos
-- Process/memory diagrams
-- Debugging drills
-
-## v9 - Career Readiness
-
-- Resume bullet generator for projects
-- Portfolio readiness scoring
-- Mock interview mode
-- Job role skill maps
-- Weekly study plan generator
-
-## v10 - Professional Bootcamp Platform
-
-- SQLite-backed curriculum
-- User profiles
-- Plugin curriculum packs
-- Exportable certificates/reports
-- Full release installer
+## v10 - Complete Bootcamp Platform
+Multi-profile support, rubric scoring, exportable reports, and installer packaging.

@@ -1,0 +1,13 @@
+{
+  "name": "typescript-workspace-starter",
+  "version": "1.0.0",
+  "private": true,
+  "devDependencies": {
+    "typescript": "latest",
+    "ts-node": "latest"
+  },
+  "scripts": {
+    "run": "ts-node main.ts",
+    "check": "tsc --noEmit main.ts"
+  }
+}

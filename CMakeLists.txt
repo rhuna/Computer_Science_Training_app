@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.24)
 # CSBootcampDesktop is a Qt Widgets desktop application written in modern C++.
 # The project is intentionally structured like a professional app so future versions
 # can add modules without replacing this foundation.
-project(CSBootcampDesktop VERSION 1.0.0 LANGUAGES CXX)
+project(CSBootcampDesktop VERSION 7.0.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -38,4 +38,20 @@ add_custom_command(TARGET CSBootcampDesktop POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
             ${CMAKE_SOURCE_DIR}/data
             $<TARGET_FILE_DIR:CSBootcampDesktop>/data
+)
+
+# v6 keeps copying starter exercise workspaces beside the executable so the in-app
+# exercise runner can point at real folders when the app launches from build/.
+add_custom_command(TARGET CSBootcampDesktop POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_SOURCE_DIR}/examples
+            $<TARGET_FILE_DIR:CSBootcampDesktop>/examples
+)
+
+# v7 also ships project templates so the generator can create starter repos
+# from the same folder layout used by the curriculum examples.
+add_custom_command(TARGET CSBootcampDesktop POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_SOURCE_DIR}/project_templates
+            $<TARGET_FILE_DIR:CSBootcampDesktop>/project_templates
 )

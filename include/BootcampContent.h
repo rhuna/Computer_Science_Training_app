@@ -3,9 +3,6 @@
 #include <QString>
 #include <QVector>
 
-// A single lesson inside a bootcamp module.
-// Lessons are intentionally plain data so future versions can load them from JSON,
-// SQLite, Markdown, or a remote content server without changing the UI contract.
 struct Lesson
 {
     QString id;
@@ -16,8 +13,6 @@ struct Lesson
     QVector<QString> practicePrompts;
 };
 
-// A coding exercise that the student can attempt inside or outside the app.
-// v1 stores starter code and expected ideas; later versions can compile/run code.
 struct Exercise
 {
     QString id;
@@ -28,7 +23,6 @@ struct Exercise
     QString expectedConcepts;
 };
 
-// A quiz question with answer choices and a short teaching explanation.
 struct QuizQuestion
 {
     QString id;
@@ -38,7 +32,6 @@ struct QuizQuestion
     QString explanation;
 };
 
-// A portfolio project that pushes the user toward professional readiness.
 struct PortfolioProject
 {
     QString id;
@@ -49,7 +42,6 @@ struct PortfolioProject
     QVector<QString> stretchGoals;
 };
 
-// A larger curriculum module, such as C++ Fundamentals or Data Structures.
 struct Module
 {
     QString id;
@@ -62,11 +54,37 @@ struct Module
     QVector<PortfolioProject> projects;
 };
 
-// BootcampContent owns the built-in v1 curriculum.
-// Keeping this separate from MainWindow prevents the UI from becoming tangled
-// with lesson data and makes later content upgrades easier.
+struct LanguageTrack
+{
+    QString id;
+    QString name;
+    QString professionalUse;
+    QString whyLearnIt;
+    QString setupCommand;
+    QVector<QString> installChecks;
+    QVector<QString> runCommands;
+    QVector<QString> starterFiles;
+    QVector<QString> firstWeekPlan;
+    QVector<QString> coreTopics;
+    QVector<QString> beginnerMilestones;
+    QVector<QString> professionalMilestones;
+    QVector<QString> portfolioProjects;
+};
+
+struct CareerPath
+{
+    QString id;
+    QString title;
+    QString summary;
+    QVector<QString> requiredSkills;
+    QVector<QString> recommendedLanguages;
+    QVector<QString> capstones;
+};
+
 class BootcampContent
 {
 public:
     static QVector<Module> createDefaultModules();
+    static QVector<LanguageTrack> createLanguageTracks();
+    static QVector<CareerPath> createCareerPaths();
 };
