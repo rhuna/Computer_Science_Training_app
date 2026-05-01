@@ -1,8 +1,9 @@
 # Version Plan
 
-- v20: Unified workflow and simplified tabs.
-- v21: Verified multi-language exercise packs.
-- v22: Structured test harness and richer failure feedback.
-- v23: Content authoring tools.
-- v24: Adaptive study planner.
-- v25: Stable release candidate.
+- v22: Guided course restructuring.
+- v23: Real correctness verifier.
+- v24: Problem-solving efficiency course with pattern coach and deliberate practice loop.
+- v25: Expanded pattern drills.
+- v26: Adaptive remediation.
+- v27: Timed interview mode.
+- v28: Final professional course polish.

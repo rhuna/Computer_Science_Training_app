@@ -1,0 +1,17 @@
+# HTTP Client Drill - Go
+
+Exercise id: `ex_http_client`
+
+Expected verification token:
+
+```text
+PASS_HTTP_CLIENT
+```
+
+## How to use this pack
+
+1. Run `run.bat` to prove the starter works.
+2. Run `test.bat` when available.
+3. Replace the starter implementation with your own solution.
+4. Keep the same behavior and make the program print `PASS_HTTP_CLIENT` after the solution succeeds.
+5. Use the app's **Verify Correct** button to confirm the output.

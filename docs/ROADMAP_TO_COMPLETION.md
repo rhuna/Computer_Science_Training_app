@@ -1,21 +1,21 @@
-# Roadmap After v21
+# Roadmap After v24
 
-## v21 - Verified Exercise Packs
+## Completed through v24
 
-Current release. Adds runnable starter packs across the major language tracks with expected output tokens and verification documentation.
+The app is now a focused guided CS bootcamp course with real exercise verification and a problem-solving efficiency coach.
 
-## v22 - Real Test Harness Upgrade
+## v25 - Pattern Drill Expansion
 
-Add deeper validation beyond output tokens: input/output cases, per-exercise expected files, structured JSON test results, and better failure explanations inside the UI.
+Add deeper drills for arrays, strings, hash maps, recursion, trees, graphs, dynamic programming, SQL, API design, concurrency, and debugging.
 
-## v23 - Lesson Authoring and Content Editor
+## v26 - Adaptive Remediation
 
-Add an in-app editor for lessons, objectives, checklist steps, quiz questions, and verified exercise metadata.
+Use failed verification history to recommend the next lesson, pattern, quiz, and simpler prerequisite exercise.
 
-## v24 - Adaptive Study Planner
+## v27 - Timed Interview Mode
 
-Use progress, quiz misses, failed verification attempts, and notes to recommend the next lesson, exercise, and review session.
+Add timed sessions, hints, post-run review, complexity grading, and final explanation scoring.
 
-## v25 - Professional Final QA
+## v28 - Final Professional Course Polish
 
-Full app polish, installer-ready packaging, expanded smoke tests, and a locked stable curriculum pack.
+Improve UX, finish content gaps, package release, and add a final end-to-end course completion report.

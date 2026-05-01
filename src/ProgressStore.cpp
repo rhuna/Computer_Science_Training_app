@@ -624,7 +624,7 @@ QStringList ProgressStore::aiTutorReviewRows(int limit) const
 QString ProgressStore::aiTutorReviewMarkdown() const
 {
     QString markdown;
-    markdown += "# CS Bootcamp Desktop v19 AI Tutor Review History\n\n";
+    markdown += "# CS Bootcamp Desktop v22 Course Review History\n\n";
     markdown += "Profile: " + activeProfileName() + "\n\n";
     markdown += "Database path: `" + m_databasePath + "`\n\n";
     markdown += QString("Saved AI tutor reviews: **%1**\n\n").arg(aiTutorReviewCount());
@@ -739,7 +739,7 @@ QString ProgressStore::instructorDashboardMarkdown() const
     markdown += "\n## Instructor Workflow\n\n";
     markdown += "1. Create a weekly cohort assignment.\n";
     markdown += "2. Attach a clear rubric.\n";
-    markdown += "3. Use the Project Generator and Exercise Runner for hands-on work.\n";
+    markdown += "3. Use the Practice Lab and Exercise Runner for hands-on verified course work.\n";
     markdown += "4. Record scores and feedback.\n";
     markdown += "5. Export reports for learner reviews or bootcamp records.\n";
     return markdown;

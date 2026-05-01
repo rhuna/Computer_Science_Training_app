@@ -1,0 +1,1 @@
+print("PASS_ADV_BTREE_INDEX")

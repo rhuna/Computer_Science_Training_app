@@ -14,7 +14,7 @@
 #include <QTextEdit>
 #include <QVector>
 
-// CS Bootcamp Desktop v21 intentionally keeps the main window as a normal C++
+// CS Bootcamp Desktop v24 intentionally keeps the main window as a normal C++
 // class without Q_OBJECT. All events are connected with lambda-based signals.
 // This keeps the repo easier to build while still using Qt professionally.
 class MainWindow : public QMainWindow
@@ -32,19 +32,15 @@ private:
     QWidget* createDashboardPage();
     QWidget* createLearningPathPage();
     QWidget* createPracticeLabPage();
+    QWidget* createProblemSolvingCoachPage();
     QWidget* createExerciseRunnerPage();
     QWidget* createQuizTrainerPage();
     QWidget* createAlgorithmVisualizerPage();
     QWidget* createLanguageWorkspacePage();
     QWidget* createContentPackPage();
-    QWidget* createAiTutorPage();
-    QWidget* createModelAdapterPage();
     QWidget* createProgressDatabasePage();
     QWidget* createInstructorModePage();
     QWidget* createFinalCapstonePage();
-    QWidget* createAdvancedLearningPage();
-    QWidget* createNotesPage();
-    QWidget* createProjectGeneratorPage();
 
     Module* currentModule();
     Lesson* currentLesson();
@@ -55,11 +51,16 @@ private:
     QString currentContextId() const;
     QString lessonDetailText(const Lesson& lesson) const;
     QString exerciseDetailText(const Exercise& exercise) const;
+    QString problemSolvingCoachText() const;
+    QString patternGuideText(const QString& pattern) const;
     QString moduleSummaryText(const Module& module) const;
     QString quizSummaryText() const;
     QString expectedOutputTokenForExercise(const Exercise& exercise) const;
     QString starterFolderForExercise(const QString& languageId, const Exercise& exercise) const;
     QString commandForRunner(const QString& action) const;
+    QString sourceFileForRunner() const;
+    QString loadSourceCodeForRunner() const;
+    bool saveSourceCodeForRunner();
 
     void selectModule(int index);
     void selectLesson(int index);
@@ -75,6 +76,7 @@ private:
     void nextAlgorithmStep();
     void prepareAlgorithmSteps();
     void exportProgressSummary();
+    void recordProblemSolvingDrill();
 
     QVector<Module> m_modules;
     QVector<LanguageTrack> m_languageTracks;
@@ -96,6 +98,9 @@ private:
     QLabel* m_exerciseTitle = nullptr;
     QTextEdit* m_exerciseBody = nullptr;
     QTextEdit* m_exerciseCode = nullptr;
+
+    QComboBox* m_problemPatternSelector = nullptr;
+    QTextEdit* m_problemCoachBody = nullptr;
 
     QComboBox* m_runnerLanguage = nullptr;
     QLabel* m_runnerContext = nullptr;
@@ -121,15 +126,9 @@ private:
     QTextEdit* m_languageBody = nullptr;
 
     QTextEdit* m_contentBody = nullptr;
-    QTextEdit* m_aiTutorBody = nullptr;
-    QTextEdit* m_modelAdapterBody = nullptr;
     QTextEdit* m_databaseBody = nullptr;
     QTextEdit* m_instructorBody = nullptr;
     QTextEdit* m_capstoneBody = nullptr;
-    QTextEdit* m_advancedBody = nullptr;
-    QTextEdit* m_projectGeneratorBody = nullptr;
-    QLabel* m_notesContext = nullptr;
-    QTextEdit* m_notesEditor = nullptr;
 
     int m_currentModuleIndex = 0;
     int m_currentLessonIndex = 0;

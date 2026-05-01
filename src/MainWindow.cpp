@@ -7,6 +7,8 @@
 #include <QDateTime>
 #include <QDesktopServices>
 #include <QDir>
+#include <QEventLoop>
+#include <QRegularExpression>
 #include <QFile>
 #include <QFileInfo>
 #include <QFrame>
@@ -70,6 +72,73 @@ namespace
         return out;
     }
 
+    struct VerificationCase
+    {
+        QString name;
+        QString input;
+        QStringList expectedFragments;
+    };
+
+    QString normalizedText(QString value)
+    {
+        value.replace("\r\n", "\n");
+        value.replace("\r", "\n");
+        value = value.toLower();
+        value.replace(QRegularExpression("[^a-z0-9_\\-\\.]+"), " ");
+        value.replace(QRegularExpression("\\s+"), " ");
+        return value.trimmed();
+    }
+
+    QVector<VerificationCase> verificationCasesForExerciseId(const QString& exerciseId)
+    {
+        if (exerciseId == "ex_base_converter")
+        {
+            return {{"42 converts to binary and hex", "42\n", {"101010", "2a"}}, {"15 converts to binary and hex", "15\n", {"1111", "f"}}};
+        }
+        if (exerciseId == "ex_word_frequency")
+        {
+            return {{"counts repeated words", "red blue red green blue red\n", {"red", "3", "blue", "2", "green", "1"}}, {"normalizes case", "Cat cat dog CAT\n", {"cat", "3", "dog", "1"}}};
+        }
+        if (exerciseId == "ex_input_validator")
+        {
+            return {{"accepts valid profile", "25\nbrandon@example.com\nbrandon_user\n", {"valid"}}, {"rejects invalid age/email", "15\nnot-email\nbo\n", {"invalid"}}};
+        }
+        if (exerciseId == "ex_two_sum_multi")
+        {
+            return {{"finds pair for 9", "2 7 11 15\n9\n", {"0", "1"}}, {"finds pair for 6", "3 2 4\n6\n", {"1", "2"}}};
+        }
+        if (exerciseId == "ex_lru_cache")
+        {
+            return {{"evicts least recently used key", "", {"1", "-1", "3", "4"}}};
+        }
+        if (exerciseId == "ex_csv_reporter")
+        {
+            return {{"summarizes CSV values", "name,value\na,10\nb,20\nc,5\n", {"35", "20", "3"}}};
+        }
+        if (exerciseId == "ex_adv_tokenizer")
+        {
+            return {{"tokenizes expression", "let total = 3 + 4;\n", {"identifier", "total", "number", "3", "plus"}}};
+        }
+        if (exerciseId == "ex_adv_rate_limiter")
+        {
+            return {{"allows and blocks requests", "", {"allow", "allow", "block"}}};
+        }
+        if (exerciseId == "ex_adv_job_queue")
+        {
+            return {{"processes jobs in order", "", {"queued", "processing", "complete"}}};
+        }
+        if (exerciseId == "ex_adv_btree_index")
+        {
+            return {{"finds indexed keys", "", {"insert", "search", "found"}}};
+        }
+        if (exerciseId == "ex_adv_rag_pipeline")
+        {
+            return {{"retrieves and cites chunks", "What is retrieval?\n", {"retrieve", "rank", "cite"}}};
+        }
+        return {{"professional output contract", "", {exerciseId, "correct"}}};
+    }
+
+
     QFrame* card()
     {
         QFrame* frame = new QFrame;
@@ -82,14 +151,14 @@ MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
     , m_modules(BootcampContent::createDefaultModules())
     , m_languageTracks(BootcampContent::createLanguageTracks())
-    , m_progress(QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).filePath("progress_v21.sqlite"))
+    , m_progress(QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).filePath("progress_v24.sqlite"))
 {
     QDir().mkpath(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
     m_progress.load();
     buildLayout();
     applyAppStyle();
     refreshAllTabs();
-    setWindowTitle("CS Bootcamp Desktop v21 - Verified Exercise Packs");
+    setWindowTitle("CS Bootcamp Desktop v24 - Problem Solving Efficiency Course");
     setWindowIcon(QIcon(":/assets/app_icon.png"));
     resize(1480, 900);
 }
@@ -116,19 +185,15 @@ void MainWindow::buildSidebar()
         "Dashboard",
         "Learning Path",
         "Practice Lab",
+        "Problem Solving Coach",
         "Exercise Runner",
         "Quiz Trainer",
         "Algorithm Visualizer",
         "Language Workspace",
-        "Content Pack Expansion",
-        "AI Tutor Mode",
-        "Model Adapter Lab",
+        "Course Content Packs",
         "Progress Database",
         "Instructor / Bootcamp Mode",
-        "Final Capstone Certification",
-        "Advanced Learning Extension",
-        "Notes",
-        "Project Generator"
+        "Final Capstone Certification"
     });
     m_sidebar->setCurrentRow(0);
     connect(m_sidebar, &QListWidget::currentRowChanged, this, [this](int row)
@@ -147,19 +212,15 @@ void MainWindow::buildPages()
     m_pages->addWidget(createDashboardPage());
     m_pages->addWidget(createLearningPathPage());
     m_pages->addWidget(createPracticeLabPage());
+    m_pages->addWidget(createProblemSolvingCoachPage());
     m_pages->addWidget(createExerciseRunnerPage());
     m_pages->addWidget(createQuizTrainerPage());
     m_pages->addWidget(createAlgorithmVisualizerPage());
     m_pages->addWidget(createLanguageWorkspacePage());
     m_pages->addWidget(createContentPackPage());
-    m_pages->addWidget(createAiTutorPage());
-    m_pages->addWidget(createModelAdapterPage());
     m_pages->addWidget(createProgressDatabasePage());
     m_pages->addWidget(createInstructorModePage());
     m_pages->addWidget(createFinalCapstonePage());
-    m_pages->addWidget(createAdvancedLearningPage());
-    m_pages->addWidget(createNotesPage());
-    m_pages->addWidget(createProjectGeneratorPage());
 }
 
 void MainWindow::applyAppStyle()
@@ -186,7 +247,7 @@ QWidget* MainWindow::createDashboardPage()
     QWidget* page = new QWidget;
     QVBoxLayout* layout = new QVBoxLayout(page);
     layout->setSpacing(12);
-    layout->addWidget(header("CS Bootcamp Desktop v21 - Verified Exercise Packs"));
+    layout->addWidget(header("CS Bootcamp Desktop v24 - Problem Solving Efficiency Course"));
     m_dashboardSummary = new QLabel;
     m_dashboardSummary->setWordWrap(true);
     m_dashboardProgress = new QProgressBar;
@@ -283,6 +344,56 @@ QWidget* MainWindow::createPracticeLabPage()
             refreshAllTabs();
         }
     });
+    return page;
+}
+
+QWidget* MainWindow::createProblemSolvingCoachPage()
+{
+    QWidget* page = new QWidget;
+    QVBoxLayout* layout = new QVBoxLayout(page);
+    layout->setSpacing(12);
+    layout->addWidget(header("Problem Solving Coach"));
+
+    QLabel* intro = new QLabel("This tab turns the selected lesson and exercise into a repeatable coding problem-solving process: understand, plan, trace, implement, test, debug, refactor, and explain.");
+    intro->setWordWrap(true);
+    layout->addWidget(intro);
+
+    m_problemPatternSelector = new QComboBox;
+    m_problemPatternSelector->addItems({
+        "Universal Problem-Solving Loop",
+        "Input / Output Modeling",
+        "Brute Force to Optimized",
+        "Two Pointers",
+        "Hash Map Lookup",
+        "Stack / Queue State",
+        "Tree / Graph Traversal",
+        "Dynamic Programming",
+        "Debugging Failed Tests",
+        "Complexity and Tradeoff Review"
+    });
+
+    layout->addWidget(smallTitle("Problem-solving pattern"));
+    layout->addWidget(m_problemPatternSelector);
+
+    m_problemCoachBody = readOnlyText(560);
+    layout->addWidget(m_problemCoachBody, 1);
+
+    QHBoxLayout* buttons = new QHBoxLayout;
+    QPushButton* openPractice = new QPushButton("Open Practice Lab");
+    QPushButton* openRunner = new QPushButton("Open Runner");
+    QPushButton* openQuiz = new QPushButton("Open Quiz");
+    QPushButton* recordDrill = new QPushButton("Record 20-Min Problem Drill");
+    buttons->addWidget(openPractice);
+    buttons->addWidget(openRunner);
+    buttons->addWidget(openQuiz);
+    buttons->addWidget(recordDrill);
+    layout->addLayout(buttons);
+
+    connect(m_problemPatternSelector, &QComboBox::currentTextChanged, this, [this] { refreshAllTabs(); });
+    connect(openPractice, &QPushButton::clicked, this, [this] { m_sidebar->setCurrentRow(2); });
+    connect(openRunner, &QPushButton::clicked, this, [this] { m_sidebar->setCurrentRow(4); });
+    connect(openQuiz, &QPushButton::clicked, this, [this] { m_sidebar->setCurrentRow(5); });
+    connect(recordDrill, &QPushButton::clicked, this, [this] { recordProblemSolvingDrill(); });
     return page;
 }
 
@@ -385,7 +496,7 @@ QWidget* MainWindow::createAlgorithmVisualizerPage()
     QVBoxLayout* layout = new QVBoxLayout(page);
     layout->addWidget(header("Algorithm Visualizer"));
     m_algorithmSelector = new QComboBox;
-    m_algorithmSelector->addItems({"Binary Search", "Bubble Sort", "Hash Table Lookup", "BFS Traversal", "DFS Traversal", "Stack Operations", "Queue Operations"});
+    m_algorithmSelector->addItems({"Binary Search", "Bubble Sort", "Hash Table Lookup", "BFS Traversal", "DFS Traversal", "Stack Operations", "Queue Operations", "LRU Cache", "Dijkstra Shortest Path", "Database B-Tree Index", "Compiler Tokenizer", "Distributed Job Queue", "Rate Limiter", "RAG Retrieval Pipeline"});
     m_algorithmComplexity = smallTitle("Complexity");
     m_algorithmOutput = readOnlyText(480);
     QHBoxLayout* buttons = new QHBoxLayout;
@@ -422,7 +533,7 @@ QWidget* MainWindow::createLanguageWorkspacePage()
     root->addLayout(left, 0);
     root->addLayout(right, 1);
     connect(m_languageList, &QListWidget::currentRowChanged, this, [this](int index) { selectLanguageTrack(index); });
-    connect(openRunner, &QPushButton::clicked, this, [this] { m_sidebar->setCurrentRow(3); });
+    connect(openRunner, &QPushButton::clicked, this, [this] { m_sidebar->setCurrentRow(4); });
     return page;
 }
 
@@ -430,31 +541,13 @@ QWidget* MainWindow::createContentPackPage()
 {
     QWidget* page = new QWidget;
     QVBoxLayout* layout = new QVBoxLayout(page);
-    layout->addWidget(header("Professional Content Pack Expansion"));
+    layout->addWidget(header("Course Content Packs"));
     m_contentBody = readOnlyText(620);
     layout->addWidget(m_contentBody, 1);
     return page;
 }
 
-QWidget* MainWindow::createAiTutorPage()
-{
-    QWidget* page = new QWidget;
-    QVBoxLayout* layout = new QVBoxLayout(page);
-    layout->addWidget(header("AI Tutor Mode"));
-    m_aiTutorBody = readOnlyText(620);
-    layout->addWidget(m_aiTutorBody, 1);
-    return page;
-}
 
-QWidget* MainWindow::createModelAdapterPage()
-{
-    QWidget* page = new QWidget;
-    QVBoxLayout* layout = new QVBoxLayout(page);
-    layout->addWidget(header("Model Adapter Lab"));
-    m_modelAdapterBody = readOnlyText(620);
-    layout->addWidget(m_modelAdapterBody, 1);
-    return page;
-}
 
 QWidget* MainWindow::createProgressDatabasePage()
 {
@@ -489,45 +582,8 @@ QWidget* MainWindow::createFinalCapstonePage()
     return page;
 }
 
-QWidget* MainWindow::createAdvancedLearningPage()
-{
-    QWidget* page = new QWidget;
-    QVBoxLayout* layout = new QVBoxLayout(page);
-    layout->addWidget(header("Advanced Learning Extension"));
-    m_advancedBody = readOnlyText(620);
-    layout->addWidget(m_advancedBody, 1);
-    return page;
-}
 
-QWidget* MainWindow::createNotesPage()
-{
-    QWidget* page = new QWidget;
-    QVBoxLayout* layout = new QVBoxLayout(page);
-    layout->addWidget(header("Context Notes"));
-    m_notesContext = new QLabel;
-    m_notesContext->setWordWrap(true);
-    m_notesEditor = new QTextEdit;
-    QPushButton* save = new QPushButton("Save Notes For Current Lesson / Exercise / Quiz Context");
-    layout->addWidget(m_notesContext);
-    layout->addWidget(m_notesEditor, 1);
-    layout->addWidget(save);
-    connect(save, &QPushButton::clicked, this, [this]
-    {
-        m_progress.setNotesFor(currentContextId(), m_notesEditor->toPlainText());
-        refreshAllTabs();
-    });
-    return page;
-}
 
-QWidget* MainWindow::createProjectGeneratorPage()
-{
-    QWidget* page = new QWidget;
-    QVBoxLayout* layout = new QVBoxLayout(page);
-    layout->addWidget(header("Project Generator"));
-    m_projectGeneratorBody = readOnlyText(620);
-    layout->addWidget(m_projectGeneratorBody, 1);
-    return page;
-}
 
 void MainWindow::selectModule(int index)
 {
@@ -552,6 +608,7 @@ void MainWindow::selectExercise(int index)
 {
     if (!currentModule() || index < 0 || index >= currentModule()->exercises.size()) return;
     m_currentExerciseIndex = index;
+    if (m_exerciseCode) m_exerciseCode->clear();
     refreshAllTabs();
 }
 
@@ -566,6 +623,7 @@ void MainWindow::selectLanguageTrack(int index)
 {
     if (index < 0 || index >= m_languageTracks.size()) return;
     m_currentLanguageIndex = index;
+    if (m_exerciseCode) m_exerciseCode->clear();
     refreshAllTabs();
 }
 
@@ -620,27 +678,28 @@ QString MainWindow::lessonDetailText(const Lesson& lesson) const
     QString text;
     text += "OBJECTIVE\n" + lesson.objective + "\n\n";
     text += "DETAILED EXPLANATION\n" + lesson.explanation + "\n\n";
-    text += "HOW TO COMPLETE THIS OBJECTIVE\n";
-    text += "1. Read the explanation slowly and rewrite the idea in your own words.\n";
-    text += "2. Identify the vocabulary terms that appear in the objective.\n";
-    text += "3. Build or trace a tiny example before attempting a larger exercise.\n";
-    text += "4. Use the Practice Lab exercise connected to this module.\n";
-    text += "5. Run the code in Exercise Runner, then use Verify Correct.\n";
-    text += "6. Take the connected quiz question and read the explanation even if you got it right.\n";
-    text += "7. Save notes for anything you could not explain without looking.\n\n";
+    text += "HOW TO COMPLETE THIS OBJECTIVE USING THE v24 PROBLEM-SOLVING LOOP\n";
+    text += "1. Understand: rewrite the objective as a problem statement, list inputs, outputs, and constraints.\n";
+    text += "2. Plan: choose a pattern before coding. Ask whether the problem is counting, searching, transforming, validating, traversing, or optimizing.\n";
+    text += "3. Trace: work one tiny example by hand and write the expected output before touching code.\n";
+    text += "4. Implement: code the simplest readable solution first; do not optimize early.\n";
+    text += "5. Verify: run the Exercise Runner real tests and compare actual behavior against expected behavior.\n";
+    text += "6. Debug: if a test fails, identify whether the failure is input parsing, state update, edge case, output format, or algorithm choice.\n";
+    text += "7. Refactor: improve names, structure, and complexity only after correctness is proven.\n";
+    text += "8. Explain: answer the quiz and explain your solution without looking at the code.\n\n";
     text += "CHECKLIST WITH HOW-TO STEPS\n";
     int step = 1;
     for (const QString& item : lesson.checklist)
     {
         text += QString::number(step++) + ". " + item + "\n";
-        text += "   How to do it: define the term, write a one-line example, explain a failure case, then connect it to a real program.\n";
+        text += "   How to do it: define the term, create a small input/output example, predict the result, identify one edge case, and connect it to the selected exercise.\n";
     }
     text += "\nPRACTICE ITEMS WITH INSTRUCTIONS\n";
     step = 1;
     for (const QString& item : lesson.practicePrompts)
     {
         text += QString::number(step++) + ". " + item + "\n";
-        text += "   Do this by creating a tiny input, predicting the output, writing the code or notes, checking the result, and writing what changed in your understanding.\n";
+        text += "   Do this by writing the input, expected output, chosen pattern, first attempt, failed test if any, fix made, and final explanation.\n";
     }
     return text;
 }
@@ -651,16 +710,100 @@ QString MainWindow::exerciseDetailText(const Exercise& exercise) const
     text += "DIFFICULTY: " + exercise.difficulty + "\n\n";
     text += "PROMPT\n" + exercise.prompt + "\n\n";
     text += "EXPECTED CONCEPTS\n" + exercise.expectedConcepts + "\n\n";
-    text += "HOW TO DO THIS PRACTICE\n";
-    text += "1. Restate the problem in plain English.\n";
-    text += "2. Write the input and output examples before coding.\n";
-    text += "3. Write the smallest working solution first.\n";
-    text += "4. Run it with the Exercise Runner.\n";
-    text += "5. Use Verify Correct to check for the expected output token.\n";
-    text += "6. Refactor only after it runs correctly.\n";
-    text += "7. Save an attempt record with what failed and what you fixed.\n\n";
+    text += "HOW TO SOLVE THIS EFFICIENTLY\n";
+    text += "1. Classify the problem: parsing, counting, search, traversal, validation, optimization, or simulation.\n";
+    text += "2. Write the function contract: what input comes in, what output must come out, and what must never happen.\n";
+    text += "3. Build a tiny hand-trace table before coding: step, variable state, decision, output.\n";
+    text += "4. Implement the simplest correct version first. Make the program easy to test from standard input.\n";
+    text += "5. Run Verify Correct. The app compiles/runs your code, feeds tests, captures output, and compares behavior.\n";
+    text += "6. When a test fails, use the failure category: wrong parsing, wrong loop boundary, wrong state update, missing edge case, wrong output format, or wrong algorithm.\n";
+    text += "7. Improve efficiency: describe the Big-O cost, then decide whether a better data structure or pattern is needed.\n";
+    text += "8. Explain the final solution in three sentences: approach, correctness reason, complexity.\n\n";
     text += "CORRECTNESS EXPECTATION\n";
-    text += "The built-in verifier looks for this output token: " + expectedOutputTokenForExercise(exercise) + "\n";
+    text += "The built-in verifier now runs real input/output checks. A marker string alone is not accepted. Expected behavior is shown in the verification report.\n";
+    return text;
+}
+
+QString MainWindow::patternGuideText(const QString& pattern) const
+{
+    if (pattern == "Input / Output Modeling")
+    {
+        return "Pattern: Input / Output Modeling\n\nUse this when you are not sure how to start.\n\n1. Write every input value the program receives.\n2. Write the exact output the verifier expects.\n3. Build a two-column table: input state -> output evidence.\n4. Decide whether the solution needs parsing, validation, counting, searching, or transformation.\n5. Make the program print only useful final evidence so automated checks are reliable.\n\nEfficiency habit: most slow solutions start from unclear I/O. Lock down the contract first.";
+    }
+    if (pattern == "Brute Force to Optimized")
+    {
+        return "Pattern: Brute Force to Optimized\n\n1. Write the obvious solution first, even if it is slow.\n2. Identify repeated work.\n3. Replace repeated scans with a map, set, sorted order, prefix table, cache, or queue.\n4. Compare complexity before and after.\n5. Keep the brute-force version as a mental verifier for small cases.\n\nEfficiency habit: optimize the repeated work, not random lines of code.";
+    }
+    if (pattern == "Two Pointers")
+    {
+        return "Pattern: Two Pointers\n\nUse this for sorted arrays, windows, pairs, or scanning from both ends.\n\n1. Decide what each pointer means.\n2. Write the movement rule.\n3. Prove the rule does not skip a valid answer.\n4. Trace three iterations by hand.\n5. Handle empty, one-item, and duplicate-value cases.\n\nCommon bug: moving both pointers when only one side should move.";
+    }
+    if (pattern == "Hash Map Lookup")
+    {
+        return "Pattern: Hash Map Lookup\n\nUse this when the problem asks for fast membership, counts, grouping, or lookup by key.\n\n1. Choose the key.\n2. Choose the value stored with the key.\n3. Decide when to insert and when to query.\n4. Trace collisions conceptually, even though the library handles them.\n5. Explain average O(1) lookup and the memory tradeoff.\n\nCommon bug: using the wrong key, such as the index when the value should be the key.";
+    }
+    if (pattern == "Stack / Queue State")
+    {
+        return "Pattern: Stack / Queue State\n\nUse stack for last-in-first-out problems and queue for first-in-first-out workflows.\n\n1. Write the invariant: what does the structure contain after each step?\n2. Trace push/pop or enqueue/dequeue operations.\n3. Check empty-state behavior.\n4. Print final evidence that proves the order is correct.\n\nCommon bug: reading from an empty structure or using stack when queue order is required.";
+    }
+    if (pattern == "Tree / Graph Traversal")
+    {
+        return "Pattern: Tree / Graph Traversal\n\nUse this for connected objects, dependency graphs, folders, maps, routes, and state spaces.\n\n1. Define nodes and edges.\n2. Choose BFS for shortest unweighted paths or level order; choose DFS for deep exploration/backtracking.\n3. Track visited nodes.\n4. Write the visit order by hand before coding.\n5. Prove termination.\n\nCommon bug: forgetting visited tracking and creating an infinite traversal.";
+    }
+    if (pattern == "Dynamic Programming")
+    {
+        return "Pattern: Dynamic Programming\n\nUse this when the problem has overlapping subproblems and an optimal substructure.\n\n1. Define the state in one sentence.\n2. Define the recurrence.\n3. Define base cases.\n4. Choose top-down memoization or bottom-up table.\n5. Trace the table for a small input.\n\nEfficiency habit: if you cannot define the state clearly, do not start coding yet.";
+    }
+    if (pattern == "Debugging Failed Tests")
+    {
+        return "Pattern: Debugging Failed Tests\n\n1. Copy the failing input.\n2. Write expected output and actual output side by side.\n3. Identify the first point where the program state becomes wrong.\n4. Classify the bug: parsing, boundary, state update, edge case, output format, or algorithm.\n5. Make the smallest fix.\n6. Re-run all tests, not only the failed one.\n\nEfficiency habit: never change multiple things before re-running tests.";
+    }
+    if (pattern == "Complexity and Tradeoff Review")
+    {
+        return "Pattern: Complexity and Tradeoff Review\n\n1. Count loops and nested loops.\n2. Identify library operations that hide cost: sort, map lookup, string split, database query.\n3. Estimate time and space complexity.\n4. Decide what input size would break the solution.\n5. Pick a tradeoff: more memory for speed, simpler code for maintainability, or preprocessing for faster queries.\n\nEfficiency habit: Big-O is a decision tool, not a decoration.";
+    }
+    return "Pattern: Universal Problem-Solving Loop\n\n1. Understand the problem.\n2. Define input, output, constraints, and examples.\n3. Choose a pattern.\n4. Trace before coding.\n5. Implement the smallest correct solution.\n6. Verify with real tests.\n7. Debug by isolating the first wrong state.\n8. Refactor for clarity and efficiency.\n9. Explain the approach, correctness, and complexity.\n\nUse this loop on every exercise until it becomes automatic.";
+}
+
+QString MainWindow::problemSolvingCoachText() const
+{
+    const Module* module = (m_currentModuleIndex >= 0 && m_currentModuleIndex < m_modules.size()) ? &m_modules[m_currentModuleIndex] : nullptr;
+    const Lesson* lesson = nullptr;
+    const Exercise* exercise = nullptr;
+    if (module)
+    {
+        if (m_currentLessonIndex >= 0 && m_currentLessonIndex < module->lessons.size()) lesson = &module->lessons[m_currentLessonIndex];
+        if (m_currentExerciseIndex >= 0 && m_currentExerciseIndex < module->exercises.size()) exercise = &module->exercises[m_currentExerciseIndex];
+    }
+
+    const QString pattern = m_problemPatternSelector ? m_problemPatternSelector->currentText() : "Universal Problem-Solving Loop";
+
+    QString text;
+    text += "CURRENT COURSE CONTEXT\n";
+    text += "Module: " + (module ? module->title : "None") + "\n";
+    text += "Lesson: " + (lesson ? lesson->title : "None") + "\n";
+    text += "Exercise: " + (exercise ? exercise->title : "None") + "\n\n";
+    text += patternGuideText(pattern) + "\n\n";
+
+    text += "20-MINUTE DELIBERATE PRACTICE DRILL\n";
+    text += "0:00-2:00  Read the prompt and underline the action words.\n";
+    text += "2:00-4:00  Write input, output, constraints, and one edge case.\n";
+    text += "4:00-7:00  Choose the pattern and hand-trace one example.\n";
+    text += "7:00-14:00 Implement the smallest correct solution.\n";
+    text += "14:00-17:00 Run Verify Correct and inspect failures.\n";
+    text += "17:00-19:00 Fix one issue and rerun.\n";
+    text += "19:00-20:00 Write approach, correctness reason, and complexity.\n\n";
+
+    text += "WHAT TO WRITE BEFORE CODING\n";
+    text += "Problem type: counting / search / traversal / parsing / validation / optimization / simulation\n";
+    text += "Inputs:\nOutputs:\nConstraints:\nTiny example:\nEdge case:\nChosen pattern:\nExpected complexity:\n\n";
+
+    text += "WHEN YOU GET STUCK\n";
+    text += "1. Shrink the input.\n";
+    text += "2. Print or inspect the state after each step.\n";
+    text += "3. Compare expected state to actual state.\n";
+    text += "4. Fix the first wrong transition.\n";
+    text += "5. Rerun all tests.\n";
     return text;
 }
 
@@ -673,7 +816,7 @@ QString MainWindow::quizSummaryText() const
 {
     const Module* module = (m_currentModuleIndex >= 0 && m_currentModuleIndex < m_modules.size()) ? &m_modules[m_currentModuleIndex] : nullptr;
     if (!module) return {};
-    return QString("Quiz bank for %1 contains %2 questions in v21. Questions now include v21 verification and debugging prompts tied to runnable exercise packs.").arg(module->title).arg(module->quiz.size());
+    return QString("Quiz bank for %1 contains %2 questions in v24. Questions now emphasize problem classification, pattern choice, debugging failed tests, complexity reasoning, and explaining correctness.").arg(module->title).arg(module->quiz.size());
 }
 
 QString MainWindow::expectedOutputTokenForExercise(const Exercise& exercise) const
@@ -695,7 +838,7 @@ QString MainWindow::expectedOutputTokenForExercise(const Exercise& exercise) con
 
 QString MainWindow::starterFolderForExercise(const QString& languageId, const Exercise& exercise) const
 {
-    const QString base = QCoreApplication::applicationDirPath() + "/examples/v21_verified_exercises";
+    const QString base = QCoreApplication::applicationDirPath() + "/examples/v24_problem_solving_exercises";
     const QString folder = base + "/" + languageId + "/" + exercise.id;
     return folder;
 }
@@ -720,9 +863,60 @@ QString MainWindow::commandForRunner(const QString& action) const
     return {};
 }
 
+QString MainWindow::sourceFileForRunner() const
+{
+    const LanguageTrack* track = (m_currentLanguageIndex >= 0 && m_currentLanguageIndex < m_languageTracks.size()) ? &m_languageTracks[m_currentLanguageIndex] : nullptr;
+    const Module* module = (m_currentModuleIndex >= 0 && m_currentModuleIndex < m_modules.size()) ? &m_modules[m_currentModuleIndex] : nullptr;
+    if (!track || !module || m_currentExerciseIndex < 0 || m_currentExerciseIndex >= module->exercises.size()) return {};
+    const QString folder = starterFolderForExercise(track->id, module->exercises[m_currentExerciseIndex]);
+    if (track->id.contains("python")) return folder + "/main.py";
+    if (track->id.contains("cpp")) return folder + "/main.cpp";
+    if (track->id.contains("javascript")) return folder + "/main.js";
+    if (track->id.contains("typescript")) return folder + "/main.ts";
+    if (track->id.contains("java") && !track->id.contains("javascript")) return folder + "/Main.java";
+    if (track->id.contains("csharp")) return folder + "/Program.cs";
+    if (track->id.contains("go")) return folder + "/main.go";
+    if (track->id.contains("rust")) return folder + "/src/main.rs";
+    if (track->id.contains("sql")) return folder + "/queries.sql";
+    if (track->id.contains("kotlin")) return folder + "/Main.kt";
+    return {};
+}
+
+QString MainWindow::loadSourceCodeForRunner() const
+{
+    const QString path = sourceFileForRunner();
+    QFile file(path);
+    if (file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        return QString::fromUtf8(file.readAll());
+    }
+    const Module* module = (m_currentModuleIndex >= 0 && m_currentModuleIndex < m_modules.size()) ? &m_modules[m_currentModuleIndex] : nullptr;
+    if (!module || m_currentExerciseIndex < 0 || m_currentExerciseIndex >= module->exercises.size()) return {};
+    return module->exercises[m_currentExerciseIndex].starterCode;
+}
+
+bool MainWindow::saveSourceCodeForRunner()
+{
+    if (!m_exerciseCode) return true;
+    const QString path = sourceFileForRunner();
+    if (path.isEmpty()) return false;
+    QFileInfo info(path);
+    QDir().mkpath(info.absolutePath());
+    QFile file(path);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        appendRunnerOutput("\n[save failed] Could not write source file: " + path + "\n");
+        return false;
+    }
+    QTextStream out(&file);
+    out << m_exerciseCode->toPlainText();
+    appendRunnerOutput("\n[save] Wrote editor code to: " + path + "\n");
+    return true;
+}
+
 void MainWindow::copyExerciseToRunner()
 {
-    m_sidebar->setCurrentRow(3);
+    m_sidebar->setCurrentRow(4);
     refreshAllTabs();
 }
 
@@ -731,6 +925,7 @@ void MainWindow::runRunnerAction(const QString& action)
     Exercise* exercise = currentExercise();
     LanguageTrack* track = currentLanguageTrack();
     if (!exercise || !track || !m_runnerProcess) return;
+    if (!saveSourceCodeForRunner()) return;
     const QString folder = starterFolderForExercise(track->id, *exercise);
     const QString command = commandForRunner(action == "build" ? "build" : action == "test" ? "test" : "run");
     QDir().mkpath(folder);
@@ -747,21 +942,117 @@ void MainWindow::runRunnerAction(const QString& action)
 void MainWindow::verifyRunnerOutput()
 {
     Exercise* exercise = currentExercise();
-    if (!exercise) return;
-    const QString token = expectedOutputTokenForExercise(*exercise);
-    const bool correct = m_lastRunnerOutput.contains(token, Qt::CaseInsensitive);
-    appendRunnerOutput(correct ? "\n[VERIFY] Correct. Expected token found: " + token + "\n" : "\n[VERIFY] Not verified yet. Expected token missing: " + token + "\n");
-    if (correct)
+    LanguageTrack* track = currentLanguageTrack();
+    if (!exercise || !track) return;
+    if (!saveSourceCodeForRunner()) return;
+
+    const QString folder = starterFolderForExercise(track->id, *exercise);
+    const QString buildCommand = commandForRunner("build");
+    const QString runCommand = commandForRunner("run");
+    const QVector<VerificationCase> cases = verificationCasesForExerciseId(exercise->id);
+
+    m_lastRunnerOutput.clear();
+    appendRunnerOutput("\n[VERIFY] v24 real verifier started. It checks behavior, then asks you to review the problem-solving process.\n");
+    appendRunnerOutput("[VERIFY] Source file: " + sourceFileForRunner() + "\n");
+    appendRunnerOutput("[VERIFY] Working folder: " + folder + "\n");
+
+    auto execute = [&](const QString& command, const QString& input, int timeoutMs, QString* combinedOutput, int* exitCode) -> bool
     {
+        QProcess process;
+        process.setWorkingDirectory(folder);
+#ifdef Q_OS_WIN
+        process.start("cmd.exe", {"/C", command});
+#else
+        process.start("/bin/sh", {"-lc", command});
+#endif
+        if (!process.waitForStarted(5000))
+        {
+            *combinedOutput = "Process could not start.";
+            *exitCode = -999;
+            return false;
+        }
+        if (!input.isEmpty())
+        {
+            process.write(input.toUtf8());
+        }
+        process.closeWriteChannel();
+        const bool finished = process.waitForFinished(timeoutMs);
+        if (!finished)
+        {
+            process.kill();
+            process.waitForFinished(2000);
+        }
+        *exitCode = finished ? process.exitCode() : -998;
+        *combinedOutput = QString::fromLocal8Bit(process.readAllStandardOutput()) + QString::fromLocal8Bit(process.readAllStandardError());
+        return finished && process.exitStatus() == QProcess::NormalExit && process.exitCode() == 0;
+    };
+
+    if (!buildCommand.isEmpty() && buildCommand != runCommand && !buildCommand.contains("unittest", Qt::CaseInsensitive) && !buildCommand.contains("pytest", Qt::CaseInsensitive))
+    {
+        QString buildOutput;
+        int buildExit = 0;
+        appendRunnerOutput("\n[BUILD] " + buildCommand + "\n");
+        const bool buildOk = execute(buildCommand, "", 30000, &buildOutput, &buildExit);
+        appendRunnerOutput(buildOutput.trimmed() + "\n");
+        if (!buildOk)
+        {
+            appendRunnerOutput(QString("\n[VERIFY] Build failed. Exit code: %1. Fix compiler errors before correctness tests can run.\n").arg(buildExit));
+            recordRunnerAttempt("verification_build_failed");
+            refreshAllTabs();
+            return;
+        }
+    }
+
+    bool allPassed = true;
+    int passed = 0;
+    int number = 1;
+    for (const VerificationCase& testCase : cases)
+    {
+        QString output;
+        int exitCode = 0;
+        appendRunnerOutput(QString("\n[TEST %1] %2\n").arg(number).arg(testCase.name));
+        appendRunnerOutput("Input:\n" + (testCase.input.isEmpty() ? QString("<no stdin>\n") : testCase.input));
+        const bool ran = execute(runCommand, testCase.input, 15000, &output, &exitCode);
+        const QString normalizedOutput = normalizedText(output);
+        bool fragmentsPresent = ran;
+        QStringList missing;
+        for (const QString& fragment : testCase.expectedFragments)
+        {
+            if (!normalizedOutput.contains(normalizedText(fragment)))
+            {
+                fragmentsPresent = false;
+                missing << fragment;
+            }
+        }
+        appendRunnerOutput("Output:\n" + output.trimmed() + "\n");
+        if (fragmentsPresent)
+        {
+            appendRunnerOutput("Result: PASS\n");
+            ++passed;
+        }
+        else
+        {
+            allPassed = false;
+            appendRunnerOutput(QString("Result: FAIL\nExit code: %1\nMissing expected evidence: %2\n").arg(exitCode).arg(missing.join(", ")));
+        }
+        ++number;
+    }
+
+    appendRunnerOutput(QString("\n[VERIFY] Passed %1 / %2 real test case(s).\n").arg(passed).arg(cases.size()));
+    if (allPassed)
+    {
+        appendRunnerOutput("[VERIFY] Correct. The program produced the expected behavior for every verification case.\n");
         m_progress.setCompleted(exercise->id, true);
-        recordRunnerAttempt("verified_correct");
+        recordRunnerAttempt("verified_correct_by_real_tests");
     }
     else
     {
-        recordRunnerAttempt("verification_failed");
+        appendRunnerOutput("[VERIFY] Not correct yet. Fix the code so the actual output matches the expected behavior, not just a marker string.\n");
+        recordRunnerAttempt("verification_failed_real_tests");
     }
     refreshAllTabs();
 }
+
 
 void MainWindow::appendRunnerOutput(const QString& text)
 {
@@ -778,7 +1069,7 @@ void MainWindow::recordRunnerAttempt(const QString& status)
     LanguageTrack* track = currentLanguageTrack();
     Module* module = currentModule();
     if (!exercise || !track || !module) return;
-    m_progress.recordCodeAttempt(track->name, module->title, exercise->id, exercise->difficulty, commandForRunner("run"), m_lastRunnerOutput.left(500), status, "Recorded from v21 verified exercise runner.");
+    m_progress.recordCodeAttempt(track->name, module->title, exercise->id, exercise->difficulty, commandForRunner("run"), m_lastRunnerOutput.left(500), status, "Recorded from v24 problem-solving course runner.");
 }
 
 void MainWindow::prepareAlgorithmSteps()
@@ -794,6 +1085,41 @@ void MainWindow::prepareAlgorithmSteps()
     {
         m_algorithmComplexity->setText("Bubble Sort: O(n^2) time, O(1) space.");
         m_algorithmSteps = {"Start with [5, 1, 4, 2].", "Compare 5 and 1; swap.", "Compare 5 and 4; swap.", "Compare 5 and 2; swap. Largest value is now at the end.", "Repeat passes until no swaps occur.", "Sorted result: [1, 2, 4, 5]."};
+    }
+    else if (alg == "LRU Cache")
+    {
+        m_algorithmComplexity->setText("LRU Cache: O(1) average get/put using a hash map plus doubly linked list.");
+        m_algorithmSteps = {"Capacity = 3. Start empty.", "put(A): add A to the front and map A to its node.", "put(B), put(C): newest item stays at the front; oldest moves toward the back.", "get(A): return A and move A to the front because it is recently used.", "put(D): capacity is exceeded, so evict the least recently used item.", "Explain why the map gives lookup speed and the list gives fast reordering."};
+    }
+    else if (alg == "Dijkstra Shortest Path")
+    {
+        m_algorithmComplexity->setText("Dijkstra: O((V + E) log V) with a priority queue for non-negative weighted graphs.");
+        m_algorithmSteps = {"Set the start distance to 0 and all other nodes to infinity.", "Push the start node into a priority queue.", "Pop the lowest-distance node.", "Relax each outgoing edge: if the new path is cheaper, update the distance.", "Continue until the queue is empty or the target is finalized.", "Use it for routing, dependency costs, game maps, and network paths."};
+    }
+    else if (alg == "Database B-Tree Index")
+    {
+        m_algorithmComplexity->setText("B-Tree Index: O(log n) lookup with disk/page-friendly branching.");
+        m_algorithmSteps = {"Start at the root page with sorted separator keys.", "Choose the child pointer whose range can contain the target key.", "Repeat through internal nodes until a leaf page is reached.", "Scan the leaf entries for the exact key or range start.", "Return row pointers or continue leaf traversal for a range query.", "Explain why indexes speed reads but add write and storage cost."};
+    }
+    else if (alg == "Compiler Tokenizer")
+    {
+        m_algorithmComplexity->setText("Tokenizer/Lexer: O(n) over the source text for most languages.");
+        m_algorithmSteps = {"Read the first character of the source file.", "Classify it as whitespace, identifier, number, string, operator, or punctuation.", "Consume characters while the current token rule still matches.", "Emit a token with type, lexeme, and source position.", "Repeat until end of file.", "Use clear error messages when a token is malformed."};
+    }
+    else if (alg == "Distributed Job Queue")
+    {
+        m_algorithmComplexity->setText("Job Queue: throughput depends on queue operations, workers, retry policy, and idempotency.");
+        m_algorithmSteps = {"Producer creates a job with type, payload, id, and retry count.", "Queue stores the job durably.", "Worker claims one job and marks it in progress.", "Worker runs the task and records success or failure.", "On failure, retry with backoff or move to a dead-letter queue.", "Design every job to be idempotent so retries do not corrupt data."};
+    }
+    else if (alg == "Rate Limiter")
+    {
+        m_algorithmComplexity->setText("Token Bucket Rate Limiter: O(1) per request in the common case.");
+        m_algorithmSteps = {"Each user or key has a bucket with capacity and refill rate.", "Refill tokens according to elapsed time.", "When a request arrives, check whether at least one token is available.", "If available, consume one token and allow the request.", "If empty, reject or delay the request.", "Use it to protect APIs, login forms, and expensive backend services."};
+    }
+    else if (alg == "RAG Retrieval Pipeline")
+    {
+        m_algorithmComplexity->setText("RAG Retrieval: cost depends on chunk count, index type, embedding model, reranking, and context size.");
+        m_algorithmSteps = {"Parse documents into clean text.", "Chunk the text with useful metadata and source locations.", "Create embeddings or searchable indexes for each chunk.", "Search for chunks relevant to the user question.", "Rerank or filter results, then assemble context with citations.", "Evaluate answer quality with representative questions and known sources."};
     }
     else
     {
@@ -827,15 +1153,30 @@ void MainWindow::exportProgressSummary()
 {
     const QString folder = QCoreApplication::applicationDirPath() + "/progress_exports";
     QDir().mkpath(folder);
-    QFile file(folder + "/v21_verified_progress_summary.md");
+    QFile file(folder + "/v24_problem_solving_progress_summary.md");
     if (file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         QTextStream out(&file);
-        out << "# CS Bootcamp Desktop v21 Progress Summary\n\n";
+        out << "# CS Bootcamp Desktop v24 Progress Summary\n\n";
         out << m_progress.exportMarkdownSummary();
         out << "\n\n## Code Attempts\n\n" << m_progress.codeAttemptMarkdown();
     }
-    QMessageBox::information(this, "Exported", "Progress summary exported to progress_exports/v21_verified_progress_summary.md");
+    QMessageBox::information(this, "Exported", "Progress summary exported to progress_exports/v24_problem_solving_progress_summary.md");
+}
+
+void MainWindow::recordProblemSolvingDrill()
+{
+    Exercise* exercise = currentExercise();
+    Module* module = currentModule();
+    const QString itemId = exercise ? exercise->id : currentContextId();
+    const QString moduleName = module ? module->title : "Problem Solving";
+    const QString pattern = m_problemPatternSelector ? m_problemPatternSelector->currentText() : "Universal Problem-Solving Loop";
+
+    m_progress.recordStudyEvent(itemId, "problem_solving_drill", 20, "Completed v24 drill using pattern: " + pattern);
+    m_progress.updateSkillMastery(moduleName + " - Problem Solving", 65, "Practiced classification, planning, tracing, verification, debugging, and explanation.");
+
+    QMessageBox::information(this, "Drill Recorded", "Recorded a 20-minute problem-solving drill for the current course context.");
+    refreshAllTabs();
 }
 
 void MainWindow::refreshAllTabs()
@@ -900,17 +1241,18 @@ void MainWindow::refreshAllTabs()
         m_dashboardProgress->setValue(std::min(completed, totalItems));
         m_dashboardProgress->setFormat(QString("%1 / %2 completed").arg(std::min(completed, totalItems)).arg(totalItems));
     }
-    if (m_dashboardPlan) m_dashboardPlan->setPlainText("v21 keeps the simplified v20 tab structure and adds verified multi-language exercise packs. The remaining tabs share one selected module, lesson, exercise, quiz, and language. Pick a module in Learning Path, read the detailed objective/checklist/practice guidance, send the connected exercise to the Runner, verify the output, take the module quiz, save notes, and watch Progress Database update.\n\nv21 adds verified exercise starter packs across every major language track. Each folder includes a README, run script, test script when practical, and code that prints the exact PASS token the app expects. This lets the user learn the workflow first, then replace starter code with their own solution and verify it again.");
+    if (m_dashboardPlan) m_dashboardPlan->setPlainText("v24 focuses the app on becoming faster and more disciplined at coding problem solving. The tabs now follow one connected course loop: Learning Path explains the concept, Practice Lab gives the exercise, Problem Solving Coach helps you classify and plan, Exercise Runner verifies real behavior, Quiz Trainer checks understanding, Algorithm Visualizer builds mental models, and Progress Database records evidence.\n\nUse the new coach on every exercise: understand the prompt, define inputs/outputs, choose a pattern, hand-trace a tiny example, implement, verify, debug the first wrong state, refactor, and explain complexity.");
 
     if (m_lessonTitle && lesson) m_lessonTitle->setText(lesson->title);
     if (m_lessonBody && lesson) m_lessonBody->setPlainText(lessonDetailText(*lesson));
     if (m_exerciseTitle && exercise) m_exerciseTitle->setText(exercise->title);
     if (m_exerciseBody && exercise) m_exerciseBody->setPlainText(exerciseDetailText(*exercise));
-    if (m_exerciseCode && exercise && m_exerciseCode->toPlainText().isEmpty()) m_exerciseCode->setPlainText(exercise->starterCode);
+    if (m_exerciseCode && exercise && m_exerciseCode->toPlainText().isEmpty()) m_exerciseCode->setPlainText(loadSourceCodeForRunner());
+    if (m_problemCoachBody) m_problemCoachBody->setPlainText(problemSolvingCoachText());
 
     if (m_runnerContext && module && exercise && track)
     {
-        m_runnerContext->setText("Current context: " + module->title + " → " + exercise->title + " → " + track->name + ". Verification expects token: " + expectedOutputTokenForExercise(*exercise));
+        m_runnerContext->setText("Current context: " + module->title + " → " + exercise->title + " → " + track->name + ". Verification runs real compile/run/output checks for this exercise");
     }
     if (m_runnerCommandPreview && exercise && track)
     {
@@ -934,15 +1276,9 @@ void MainWindow::refreshAllTabs()
         m_languageBody->setPlainText("Professional use:\n" + track->professionalUse + "\n\nWhy learn it:\n" + track->whyLearnIt + "\n\nSetup command:\n" + track->setupCommand + "\n\nInstall checks:\n" + bullets(track->installChecks) + "\nRun commands:\n" + bullets(track->runCommands) + "\nStarter files:\n" + bullets(track->starterFiles) + "\nFirst-week plan:\n" + numbered(track->firstWeekPlan) + "\nCore topics:\n" + bullets(track->coreTopics) + "\nBeginner milestones:\n" + bullets(track->beginnerMilestones) + "\nProfessional milestones:\n" + bullets(track->professionalMilestones));
     }
 
-    if (m_contentBody && module) m_contentBody->setPlainText("Current module content pack\n\n" + moduleSummaryText(*module) + "\n\nEvery lesson now includes detailed how-to guidance. Every checklist item has a concrete method: define it, build a tiny example, test it, and write evidence in notes. Add more content packs in content_packs/ without adding more cluttered tabs.");
-    if (m_aiTutorBody && lesson && exercise) m_aiTutorBody->setPlainText("Offline tutor prompt for current context:\n\nExplain this lesson in simple terms: " + lesson->title + "\nObjective: " + lesson->objective + "\n\nThen give a hint ladder for this exercise: " + exercise->title + "\nPrompt: " + exercise->prompt + "\n\nDo not solve it immediately. Start with a concept hint, then a pseudocode hint, then a debugging checklist.");
-    if (m_modelAdapterBody) m_modelAdapterBody->setPlainText("The model adapter remains optional. v21 keeps Offline Tutor as the default and connects AI prompts to the selected lesson/exercise context. Hosted providers can be added later without changing the learner workflow.");
-    if (m_databaseBody) m_databaseBody->setPlainText("Database path:\n" + m_progress.databasePath() + "\n\nCompleted items: " + QString::number(m_progress.completedCount()) + "\nSaved notes: " + QString::number(m_progress.notesCount()) + "\nStudy events: " + QString::number(m_progress.studyEventCount()) + "\nCode attempts: " + QString::number(m_progress.codeAttemptCount()) + "\n\nRecent study events:\n" + m_progress.recentStudyEvents(8).join("\n") + "\n\nRecent code attempts:\n" + m_progress.codeAttemptRows(8).join("\n"));
-    if (m_instructorBody && module) m_instructorBody->setPlainText("Instructor view for current module:\n\n" + module->title + "\n\nAssignment design:\n1. Require the learner to complete the detailed lesson checklist.\n2. Require a verified runner output token for the connected exercise.\n3. Require quiz mastery for the module.\n4. Require notes that explain what failed and how it was fixed.\n\nRubric: concept explanation, working code, verification evidence, debugging reflection, professional readability.");
+    if (m_contentBody && module) m_contentBody->setPlainText("Current module content pack\n\n" + moduleSummaryText(*module) + "\n\nEvery lesson now includes a problem-solving loop, checklist how-to steps, practice instructions, and runner verification guidance. v24 adds deliberate practice patterns so learners build speed through repeatable thinking, not random guessing.");
+    if (m_databaseBody) m_databaseBody->setPlainText("Database path:\n" + m_progress.databasePath() + "\n\nCompleted items: " + QString::number(m_progress.completedCount()) + "\nSaved notes from older versions: " + QString::number(m_progress.notesCount()) + "\nStudy events: " + QString::number(m_progress.studyEventCount()) + "\nCode attempts: " + QString::number(m_progress.codeAttemptCount()) + "\n\nRecent study events:\n" + m_progress.recentStudyEvents(8).join("\n") + "\n\nRecent code attempts:\n" + m_progress.codeAttemptRows(8).join("\n"));
+    if (m_instructorBody && module) m_instructorBody->setPlainText("Instructor view for current module:\n\n" + module->title + "\n\nAssignment design:\n1. Require the learner to complete the detailed lesson checklist.\n2. Require real verifier evidence from the connected exercise runner.\n3. Require quiz mastery for the module.\n4. Require a v24 problem-solving drill record explaining classification, chosen pattern, failed test, fix, and complexity.\n\nRubric: concept explanation, working code, verification evidence, debugging reflection, professional readability.");
     if (m_capstoneBody) m_capstoneBody->setPlainText("Final capstone now builds from verified practice history. The learner should choose one advanced capstone only after completing lessons, exercises, quizzes, and code-attempt records in the selected specialization.");
-    if (m_advancedBody) m_advancedBody->setPlainText("Advanced learning extension: use the same workflow for senior topics. Read objective, complete checklist, implement practice, verify output, record attempt, write notes, then explain tradeoffs. Suggested advanced case studies: tiny database engine, job queue, interpreter, high-performance API, secure auth system, AI/RAG document system.");
-    if (m_projectGeneratorBody && track && module) m_projectGeneratorBody->setPlainText("Project generator direction for current context:\n\nLanguage: " + track->name + "\nModule: " + module->title + "\n\nGenerate a starter repo that includes README, src, tests, run script, expected output token, and a verification checklist. v21 keeps this tab because it supports practice and verified learning rather than portfolio display.");
-    if (m_notesContext) m_notesContext->setText("Notes are attached to current lesson context: " + currentContextId());
-    if (m_notesEditor) m_notesEditor->setPlainText(m_progress.notesFor(currentContextId()));
     if (m_algorithmOutput && m_algorithmSteps.isEmpty()) resetAlgorithm();
 }

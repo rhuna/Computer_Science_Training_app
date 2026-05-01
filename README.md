@@ -1,31 +1,42 @@
-# CS Bootcamp Desktop v21
+# CS Bootcamp Desktop v24 - Problem Solving Efficiency Course
 
-A C++/Qt desktop computer science bootcamp platform designed to take a learner from fundamentals toward professional-level software development across multiple industry languages.
+v24 keeps the simplified guided bootcamp direction and improves the app specifically for coding problem-solving efficiency.
 
-## v21 focus
+## What changed in v24
 
-**Verified Exercise Packs.**
+The app now teaches a repeatable professional loop:
 
-v21 keeps the simplified v20 workflow and adds runnable starter packs for the major language tracks. The app now points the Exercise Runner at:
-
-```text
-examples/v21_verified_exercises/
+```txt
+Learn → Classify → Plan → Trace → Code → Verify → Debug → Refactor → Explain
 ```
 
-Each exercise pack is designed around this loop:
+## New main feature
 
-```text
-Lesson -> Practice -> Run -> Verify PASS token -> Save notes -> Progress
-```
+A new **Problem Solving Coach** tab connects the currently selected module, lesson, exercise, language, verifier, quiz, and progress database.
 
-## Major improvements
+It includes pattern guides for:
 
-- Verified starter folders for C++, Python, JavaScript, TypeScript, Java, C#, Go, Rust, SQL, and Kotlin.
-- Each pack includes a README explaining the practice goal and expected token.
-- Each pack includes `run.bat` and `test.bat` when practical.
-- The app now computes unique expected tokens from each exercise ID, such as `PASS_BASE_CONVERTER` or `PASS_WORD_FREQUENCY`.
-- Quiz banks include additional v21 verification/debugging questions.
-- Progress summaries export as `v21_verified_progress_summary.md`.
+- Universal problem-solving loop
+- Input/output modeling
+- Brute force to optimized
+- Two pointers
+- Hash map lookup
+- Stack/queue state
+- Tree/graph traversal
+- Dynamic programming
+- Debugging failed tests
+- Complexity and tradeoff review
+
+## Exercise verification
+
+The Exercise Runner still performs real correctness checks from v23:
+
+1. Saves the learner code.
+2. Builds or runs it.
+3. Feeds real test input.
+4. Captures output.
+5. Compares expected behavior.
+6. Records the attempt in SQLite.
 
 ## Build
 
@@ -33,12 +44,11 @@ Lesson -> Practice -> Run -> Verify PASS token -> Save notes -> Progress
 rebuild_clean.bat
 ```
 
-## Run
+## Docs
 
-```bat
-run_app.bat
+See:
+
+```txt
+docs/V24_PROBLEM_SOLVING_EFFICIENCY.md
+docs/V23_REAL_CORRECTNESS_VERIFIER.md
 ```
-
-## Important note
-
-Qt is required to compile this project locally. The app links Qt Widgets and Qt SQL.

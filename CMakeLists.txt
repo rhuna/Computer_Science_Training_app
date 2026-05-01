@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.24)
 # CSBootcampDesktop is a Qt Widgets desktop application written in modern C++.
 # The project is intentionally structured like a professional app so future versions
 # can add modules without replacing this foundation.
-project(CSBootcampDesktop VERSION 21.0.0 LANGUAGES CXX)
+project(CSBootcampDesktop VERSION 24.0.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -49,13 +49,6 @@ add_custom_command(TARGET CSBootcampDesktop POST_BUILD
             $<TARGET_FILE_DIR:CSBootcampDesktop>/examples
 )
 
-# v8 keeps shipping project templates and portfolio exports. v9 adds devops templates below
-# from the same folder layout used by the curriculum examples.
-add_custom_command(TARGET CSBootcampDesktop POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-            ${CMAKE_SOURCE_DIR}/project_templates
-            $<TARGET_FILE_DIR:CSBootcampDesktop>/project_templates
-)
 
 # v9 ships reusable engineering workflow templates for CI, Docker, and release readiness.
 add_custom_command(TARGET CSBootcampDesktop POST_BUILD
@@ -79,20 +72,7 @@ add_custom_command(TARGET CSBootcampDesktop POST_BUILD
 )
 
 
-# v13 ships optional AI tutor prompt templates. The app still works offline; these
-# files document how to connect the tutor workflow to a local or hosted model later.
-add_custom_command(TARGET CSBootcampDesktop POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-            ${CMAKE_SOURCE_DIR}/ai_tutor_templates
-            $<TARGET_FILE_DIR:CSBootcampDesktop>/ai_tutor_templates
-)
 
-# v14 ships release templates and productization docs beside the app for offline use.
-add_custom_command(TARGET CSBootcampDesktop POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-            ${CMAKE_SOURCE_DIR}/release_templates
-            $<TARGET_FILE_DIR:CSBootcampDesktop>/release_templates
-)
 
 # v15 ships the professional content pack library beside the app for offline use.
 add_custom_command(TARGET CSBootcampDesktop POST_BUILD
@@ -110,13 +90,6 @@ add_custom_command(TARGET CSBootcampDesktop POST_BUILD
             $<TARGET_FILE_DIR:CSBootcampDesktop>/attempt_templates
 )
 
-# v17 ships model adapter templates for connecting the offline tutor workflow to
-# hosted or local models while keeping provider settings out of source control.
-add_custom_command(TARGET CSBootcampDesktop POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-            ${CMAKE_SOURCE_DIR}/model_adapter_templates
-            $<TARGET_FILE_DIR:CSBootcampDesktop>/model_adapter_templates
-)
 
 add_custom_command(TARGET CSBootcampDesktop POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
@@ -137,7 +110,7 @@ add_custom_command(TARGET CSBootcampDesktop POST_BUILD
             $<TARGET_FILE_DIR:CSBootcampDesktop>/certification_templates
 )
 
-# v20 ships advanced learning packs for senior-level CS extension work.
+# v24 ships advanced learning and problem-solving content as integrated course material, not cluttered standalone tabs.
 add_custom_command(TARGET CSBootcampDesktop POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
             ${CMAKE_SOURCE_DIR}/advanced_learning_packs
