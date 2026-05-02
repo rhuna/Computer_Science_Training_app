@@ -1,0 +1,5 @@
+C:/dev/CS_coding/Computer_Science_Training_app/coding_bootcamp_v3/build/CMakeFiles/CSBootcampDesktop.dir
+C:/dev/CS_coding/Computer_Science_Training_app/coding_bootcamp_v3/build/CMakeFiles/edit_cache.dir
+C:/dev/CS_coding/Computer_Science_Training_app/coding_bootcamp_v3/build/CMakeFiles/rebuild_cache.dir
+C:/dev/CS_coding/Computer_Science_Training_app/coding_bootcamp_v3/build/CMakeFiles/CSBootcampDesktop_autogen_timestamp_deps.dir
+C:/dev/CS_coding/Computer_Science_Training_app/coding_bootcamp_v3/build/CMakeFiles/CSBootcampDesktop_autogen.dir

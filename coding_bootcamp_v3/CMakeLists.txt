@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.24)
 # CSBootcampDesktop is a Qt Widgets desktop application written in modern C++.
 # The project is intentionally structured like a professional app so future versions
 # can add modules without replacing this foundation.
-project(CSBootcampDesktop VERSION 28.0.0 LANGUAGES CXX)
+project(CSBootcampDesktop VERSION 35.0.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -110,7 +110,7 @@ add_custom_command(TARGET CSBootcampDesktop POST_BUILD
             $<TARGET_FILE_DIR:CSBootcampDesktop>/certification_templates
 )
 
-# v28 ships the guided helper, real-time timer, and popup coaching content as integrated course material.
+# v35 ships the guided helper, real-time timer, and popup coaching content as integrated course material.
 add_custom_command(TARGET CSBootcampDesktop POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
             ${CMAKE_SOURCE_DIR}/advanced_learning_packs

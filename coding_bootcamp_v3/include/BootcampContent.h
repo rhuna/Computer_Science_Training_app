@@ -11,6 +11,12 @@ struct Lesson
     QString explanation;
     QVector<QString> checklist;
     QVector<QString> practicePrompts;
+    QString workedExample;
+    QString coachedProblem;
+    QVector<QString> guidedQuestions;
+    QVector<QString> fillInBlanks;
+    QVector<QString> dropdownPrompts;
+    QString codeCompletion;
 };
 
 struct Exercise

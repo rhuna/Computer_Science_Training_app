@@ -15,7 +15,7 @@
 #include <QTimer>
 #include <QVector>
 
-// CS Bootcamp Desktop v28 intentionally keeps the main window as a normal C++
+// CS Bootcamp Desktop v35 intentionally keeps the main window as a normal C++
 // class without Q_OBJECT. All events are connected with lambda-based signals.
 // This keeps the repo easier to build while still using Qt professionally.
 class MainWindow : public QMainWindow
@@ -124,6 +124,7 @@ private:
     QProgressBar* m_helperPhaseProgress = nullptr;
     QComboBox* m_helperPhaseSelector = nullptr;
     QTextEdit* m_helperBody = nullptr;
+    QTextEdit* m_coachingResponseEditor = nullptr;
     QTimer* m_helperTimer = nullptr;
     int m_helperElapsedSeconds = 0;
     int m_helperTargetSeconds = 20 * 60;

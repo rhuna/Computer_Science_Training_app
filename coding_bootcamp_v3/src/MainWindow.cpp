@@ -149,20 +149,31 @@ namespace
         frame->setObjectName("card");
         return frame;
     }
+
+
+    QScrollArea* scrollable(QWidget* content)
+    {
+        QScrollArea* area = new QScrollArea;
+        area->setWidgetResizable(true);
+        area->setFrameShape(QFrame::NoFrame);
+        area->setObjectName("stageScrollArea");
+        area->setWidget(content);
+        return area;
+    }
 }
 
 MainWindow::MainWindow(QWidget* parent)
     : QMainWindow(parent)
     , m_modules(BootcampContent::createDefaultModules())
     , m_languageTracks(BootcampContent::createLanguageTracks())
-    , m_progress(QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).filePath("progress_v28.sqlite"))
+    , m_progress(QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).filePath("progress_v35.sqlite"))
 {
     QDir().mkpath(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation));
     m_progress.load();
     buildLayout();
     applyAppStyle();
     refreshAllTabs();
-    setWindowTitle("CS Bootcamp Desktop v28 - One Task at a Time Bootcamp");
+    setWindowTitle("CS Bootcamp Desktop v35 - Split-Topic Deep Lessons");
     setWindowIcon(QIcon(":/assets/app_icon.png"));
     resize(1480, 900);
 }
@@ -182,7 +193,7 @@ void MainWindow::buildLayout()
 
 void MainWindow::buildSidebar()
 {
-    // v28 keeps the sidebar object for compatibility with older helper methods,
+    // v35 keeps the sidebar object for compatibility with older helper methods,
     // but the learner-facing workflow is now a single guided course workspace.
     m_sidebar = new QListWidget;
     m_sidebar->setObjectName("sidebar");
@@ -208,19 +219,25 @@ void MainWindow::buildPages()
 void MainWindow::applyAppStyle()
 {
     qApp->setStyleSheet(R"(
-        QWidget { font-family: Segoe UI, Arial; font-size: 14px; color: #172033; }
-        QMainWindow, QWidget { background: #f4f6fb; }
+        QWidget { font-family: Segoe UI, Arial; font-size: 15px; color: #172033; }
+        QMainWindow, QWidget { background: #eef3fb; }
+        QScrollArea#stageScrollArea { background: transparent; border: none; }
+        QScrollArea#stageScrollArea QWidget { background: transparent; }
         QListWidget#sidebar { background: #111827; color: #e5e7eb; border-radius: 18px; padding: 10px; }
         QListWidget#sidebar::item { padding: 13px 12px; border-radius: 12px; margin: 3px; }
         QListWidget#sidebar::item:selected { background: #2563eb; color: white; }
-        QFrame#card { background: white; border: 1px solid #d8deea; border-radius: 18px; padding: 14px; }
-        QLabel#pageHeader { font-size: 26px; font-weight: 800; color: #0f172a; }
-        QLabel#smallTitle { font-size: 16px; font-weight: 800; color: #1d4ed8; }\n        QLabel#timerLabel { font-size: 40px; font-weight: 900; color: #0f172a; padding: 10px; }
-        QPushButton { background: #2563eb; color: white; border: none; border-radius: 12px; padding: 10px 14px; font-weight: 700; }
+        QFrame#card { background: #ffffff; border: 1px solid #d8deea; border-radius: 22px; padding: 18px; }
+        QLabel#pageHeader { font-size: 28px; font-weight: 900; color: #0f172a; letter-spacing: -0.3px; }
+        QLabel#smallTitle { font-size: 17px; font-weight: 850; color: #1d4ed8; }
+        QLabel#timerLabel { font-size: 42px; font-weight: 900; color: #0f172a; padding: 12px; background: #f8fafc; border-radius: 18px; }
+        QPushButton { background: #2563eb; color: white; border: none; border-radius: 14px; padding: 12px 16px; font-weight: 800; }
         QPushButton:hover { background: #1d4ed8; }
-        QTextEdit, QListWidget, QComboBox { background: white; border: 1px solid #cbd5e1; border-radius: 12px; padding: 8px; }
-        QProgressBar { border: 1px solid #cbd5e1; border-radius: 10px; height: 24px; text-align: center; background: white; }
-        QProgressBar::chunk { background: #22c55e; border-radius: 10px; }
+        QTextEdit { background: #fbfdff; border: 1px solid #cbd5e1; border-radius: 16px; padding: 12px; line-height: 1.45; }
+        QListWidget, QComboBox { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 14px; padding: 8px; }
+        QListWidget::item { padding: 9px; border-radius: 10px; margin: 2px; }
+        QListWidget::item:selected { background: #dbeafe; color: #0f172a; }
+        QProgressBar { border: 1px solid #cbd5e1; border-radius: 12px; height: 28px; text-align: center; background: white; font-weight: 800; }
+        QProgressBar::chunk { background: #22c55e; border-radius: 12px; }
     )");
 }
 
@@ -231,11 +248,11 @@ QWidget* MainWindow::createGuidedBootcampPage()
     outerLayout->setContentsMargins(14, 14, 14, 14);
     outerLayout->setSpacing(12);
 
-    outerLayout->addWidget(header("CS Bootcamp Desktop v28 - One Task at a Time Bootcamp"));
+    outerLayout->addWidget(header("CS Bootcamp Desktop v35 - Split-Topic Deep Lessons"));
 
     QLabel* intro = new QLabel(
-        "v28 hides everything except the current task. You complete one lesson/coaching task, then answer questions, then code and verify. "
-        "Completed lessons, questions, tests, and reviews are saved into the left history pane so you can go back, view, edit notes, and continue.");
+        "v35 makes every section explicit and objective-aligned. You see one required task at a time, and each task connects back to the selected lesson objective. "
+        "The left panel is only for available lessons. The right panel is only for finished lessons and saved reviews.");
     intro->setWordWrap(true);
     outerLayout->addWidget(intro);
 
@@ -255,56 +272,57 @@ QWidget* MainWindow::createGuidedBootcampPage()
     QSplitter* split = new QSplitter;
     split->setOrientation(Qt::Horizontal);
 
-    QFrame* historyCard = card();
-    QVBoxLayout* historyLayout = new QVBoxLayout(historyCard);
-    historyLayout->addWidget(smallTitle("Saved course history"));
-    QLabel* historyHint = new QLabel("Completed lesson, question, verification, and review checkpoints appear here. Select one to review or edit notes.");
-    historyHint->setWordWrap(true);
-    historyLayout->addWidget(historyHint);
-    m_completedHistoryList = new QListWidget;
-    m_completedHistoryList->setMinimumWidth(310);
-    historyLayout->addWidget(m_completedHistoryList, 1);
-    m_reviewEditor = new QTextEdit;
-    m_reviewEditor->setMinimumHeight(180);
-    m_reviewEditor->setPlaceholderText("Select a saved item to view details. Add reflection notes here before saving the current checkpoint.");
-    historyLayout->addWidget(smallTitle("Review / edit notes"));
-    historyLayout->addWidget(m_reviewEditor);
-    QPushButton* saveCheckpoint = new QPushButton("Save current checkpoint");
-    historyLayout->addWidget(saveCheckpoint);
-    split->addWidget(historyCard);
+    QFrame* lessonsCard = card();
+    QVBoxLayout* lessonsLayout = new QVBoxLayout(lessonsCard);
+    lessonsLayout->addWidget(smallTitle("Available lessons / course path"));
+    QLabel* lessonHint = new QLabel("Choose one lesson. The center panel will reveal only the current step for that lesson.");
+    lessonHint->setWordWrap(true);
+    lessonsLayout->addWidget(lessonHint);
+    m_lessonList = new QListWidget;
+    m_lessonList->setMinimumWidth(290);
+    lessonsLayout->addWidget(m_lessonList, 1);
+    split->addWidget(lessonsCard);
 
     QFrame* taskCard = card();
     QVBoxLayout* taskLayout = new QVBoxLayout(taskCard);
-    m_courseStageTitle = header("Current task");
+    m_courseStageTitle = header("Current required task");
     m_courseGateLabel = new QLabel;
     m_courseGateLabel->setWordWrap(true);
     taskLayout->addWidget(m_courseStageTitle);
     taskLayout->addWidget(m_courseGateLabel);
 
     QProgressBar* gateProgress = new QProgressBar;
-    gateProgress->setRange(0, 3);
+    gateProgress->setRange(0, 4);
     gateProgress->setValue(0);
-    gateProgress->setFormat("Lesson → Questions → Testing → Saved Review");
+    gateProgress->setFormat("1 Lesson  >  2 Coaching  >  3 Testing  >  4 Verification  >  5 Save");
     taskLayout->addWidget(gateProgress);
 
     m_courseTaskStack = new QStackedWidget;
 
-    // Stage 0: Lesson and coaching. Everything else remains behind the scenes.
     QWidget* lessonStage = new QWidget;
     QVBoxLayout* lessonLayout = new QVBoxLayout(lessonStage);
-    lessonLayout->addWidget(smallTitle("1. Lesson + coaching - focus here first"));
-    m_lessonList = new QListWidget;
-    m_lessonList->setMaximumHeight(120);
-    lessonLayout->addWidget(m_lessonList);
+    lessonLayout->addWidget(smallTitle("1. Lesson"));
+    QLabel* lessonOnlyHint = new QLabel("Read the lesson. This screen is for explanation, examples, and the concept. No questions and no coding yet.");
+    lessonOnlyHint->setWordWrap(true);
+    lessonLayout->addWidget(lessonOnlyHint);
     m_lessonTitle = smallTitle("Lesson");
     lessonLayout->addWidget(m_lessonTitle);
-    m_currentTaskBody = readOnlyText(430);
+    m_currentTaskBody = readOnlyText(620);
     m_lessonBody = m_currentTaskBody;
     lessonLayout->addWidget(m_currentTaskBody, 1);
+    QPushButton* lessonNext = new QPushButton("Next: Coaching");
+    lessonLayout->addWidget(lessonNext);
+    m_courseTaskStack->addWidget(scrollable(lessonStage));
 
+    QWidget* coachingStage = new QWidget;
+    QVBoxLayout* coachingLayout = new QVBoxLayout(coachingStage);
+    coachingLayout->addWidget(smallTitle("2. Coaching: Problem + Solution Walkthrough"));
+    QLabel* coachingHint = new QLabel("This step is not a quiz. It gives you one clearly defined coding problem, then walks you through how to solve it before you start coding.");
+    coachingHint->setWordWrap(true);
+    coachingLayout->addWidget(coachingHint);
     m_helperContextLabel = new QLabel;
     m_helperContextLabel->setWordWrap(true);
-    lessonLayout->addWidget(m_helperContextLabel);
+    coachingLayout->addWidget(m_helperContextLabel);
     QHBoxLayout* timerRow = new QHBoxLayout;
     m_helperTimerLabel = new QLabel("00:00 / 20:00");
     m_helperTimerLabel->setObjectName("timerLabel");
@@ -313,7 +331,7 @@ QWidget* MainWindow::createGuidedBootcampPage()
     m_helperPhaseProgress->setRange(0, m_helperTargetSeconds);
     timerRow->addWidget(m_helperTimerLabel);
     timerRow->addWidget(m_helperPhaseProgress, 1);
-    lessonLayout->addLayout(timerRow);
+    coachingLayout->addLayout(timerRow);
     m_helperPhaseSelector = new QComboBox;
     m_helperPhaseSelector->addItems({
         "1. Understand the Prompt",
@@ -326,103 +344,132 @@ QWidget* MainWindow::createGuidedBootcampPage()
         "8. Refactor for Clarity",
         "9. Explain Correctness and Complexity"
     });
-    m_helperBody = readOnlyText(180);
-    lessonLayout->addWidget(m_helperPhaseSelector);
-    lessonLayout->addWidget(m_helperBody);
+    m_helperBody = readOnlyText(440);
+    coachingLayout->addWidget(m_helperPhaseSelector);
+    coachingLayout->addWidget(m_helperBody, 1);
+    coachingLayout->addWidget(smallTitle("My solution plan"));
+    m_coachingResponseEditor = new QTextEdit;
+    m_coachingResponseEditor->setMinimumHeight(150);
+    m_coachingResponseEditor->setPlaceholderText("Write your solution plan here after reading the walkthrough: input, output, pattern, steps, edge cases, complexity.");
+    coachingLayout->addWidget(m_coachingResponseEditor);
     QHBoxLayout* helperButtons = new QHBoxLayout;
     QPushButton* startTimer = new QPushButton("Start timer");
     QPushButton* pauseTimer = new QPushButton("Pause");
     QPushButton* resetTimer = new QPushButton("Reset");
-    QPushButton* popup = new QPushButton("Coaching pop-up");
+    QPushButton* popup = new QPushButton("Walkthrough pop-up");
     helperButtons->addWidget(startTimer);
     helperButtons->addWidget(pauseTimer);
     helperButtons->addWidget(resetTimer);
     helperButtons->addWidget(popup);
-    lessonLayout->addLayout(helperButtons);
-    m_courseTaskStack->addWidget(lessonStage);
+    coachingLayout->addLayout(helperButtons);
+    QPushButton* coachingNext = new QPushButton("Next: Testing");
+    coachingLayout->addWidget(coachingNext);
+    m_courseTaskStack->addWidget(scrollable(coachingStage));
 
-    // Stage 1: Questions. The exercise and runner are still hidden.
-    QWidget* questionStage = new QWidget;
-    QVBoxLayout* questionLayout = new QVBoxLayout(questionStage);
-    questionLayout->addWidget(smallTitle("2. Questions - prove you understand before coding"));
-    m_quizList = new QListWidget;
-    m_quizList->setMaximumHeight(120);
-    m_quizTitle = smallTitle("Question checkpoint");
-    m_questionTaskBody = readOnlyText(220);
-    m_quizBody = m_questionTaskBody;
-    m_quizChoices = new QListWidget;
-    m_quizFeedback = new QLabel("Answer the question before moving into testing.");
-    m_quizFeedback->setWordWrap(true);
-    QPushButton* checkQuiz = new QPushButton("Check answer");
-    questionLayout->addWidget(m_quizTitle);
-    questionLayout->addWidget(m_quizList);
-    questionLayout->addWidget(m_questionTaskBody);
-    questionLayout->addWidget(m_quizChoices);
-    questionLayout->addWidget(checkQuiz);
-    questionLayout->addWidget(m_quizFeedback);
-    m_courseTaskStack->addWidget(questionStage);
-
-    // Stage 2: Testing and verification. Code is only visible after lesson and question work.
     QWidget* testingStage = new QWidget;
     QVBoxLayout* testingLayout = new QVBoxLayout(testingStage);
-    testingLayout->addWidget(smallTitle("3. Testing + verification - now prove the code works"));
+    testingLayout->addWidget(smallTitle("3. Testing: Questions + Coding Attempt"));
+    QLabel* testingHint = new QLabel("Now the app tests what you just learned. Answer the lesson-matched question, then code the exercise, build, run, and submit the attempt.");
+    testingHint->setWordWrap(true);
+    testingLayout->addWidget(testingHint);
+
+    m_quizTitle = smallTitle("Lesson question");
+    m_quizBody = readOnlyText(180);
+    m_quizChoices = new QListWidget;
+    m_quizChoices->setMinimumHeight(125);
+    m_quizFeedback = new QLabel("Choose an answer, then check it before submitting your coding attempt.");
+    m_quizFeedback->setWordWrap(true);
+    QPushButton* checkAnswer = new QPushButton("Check Answer");
+    testingLayout->addWidget(m_quizTitle);
+    testingLayout->addWidget(m_quizBody);
+    testingLayout->addWidget(m_quizChoices);
+    testingLayout->addWidget(m_quizFeedback);
+    testingLayout->addWidget(checkAnswer);
+
+    testingLayout->addWidget(smallTitle("Coding exercise"));
     m_exerciseList = new QListWidget;
-    m_exerciseList->setMaximumHeight(110);
+    m_exerciseList->setMaximumHeight(90);
     m_exerciseTitle = smallTitle("Exercise");
-    m_exerciseBody = readOnlyText(160);
+    m_exerciseBody = readOnlyText(145);
     m_exerciseCode = new QTextEdit;
-    m_exerciseCode->setMinimumHeight(260);
-    m_runnerContext = new QLabel;
-    m_runnerContext->setWordWrap(true);
-    m_runnerCommandPreview = readOnlyText(70);
-    QHBoxLayout* runButtons = new QHBoxLayout;
-    QPushButton* build = new QPushButton("Build / Compile");
-    QPushButton* run = new QPushButton("Run");
-    QPushButton* test = new QPushButton("Language Test");
-    QPushButton* verifyCorrect = new QPushButton("Verify Correct");
-    QPushButton* stop = new QPushButton("Stop");
-    runButtons->addWidget(build);
-    runButtons->addWidget(run);
-    runButtons->addWidget(test);
-    runButtons->addWidget(verifyCorrect);
-    runButtons->addWidget(stop);
-    m_runnerOutput = new QTextEdit;
-    m_runnerOutput->setMinimumHeight(230);
+    m_exerciseCode->setMinimumHeight(330);
     testingLayout->addWidget(m_exerciseList);
     testingLayout->addWidget(m_exerciseTitle);
     testingLayout->addWidget(m_exerciseBody);
     testingLayout->addWidget(smallTitle("Code editor"));
-    testingLayout->addWidget(m_exerciseCode);
-    testingLayout->addWidget(m_runnerContext);
-    testingLayout->addWidget(m_runnerCommandPreview);
+    testingLayout->addWidget(m_exerciseCode, 1);
+    QHBoxLayout* runButtons = new QHBoxLayout;
+    QPushButton* build = new QPushButton("Build / Compile");
+    QPushButton* run = new QPushButton("Run");
+    QPushButton* test = new QPushButton("Language Test");
+    QPushButton* stop = new QPushButton("Stop");
+    runButtons->addWidget(build);
+    runButtons->addWidget(run);
+    runButtons->addWidget(test);
+    runButtons->addWidget(stop);
     testingLayout->addLayout(runButtons);
-    testingLayout->addWidget(m_runnerOutput);
-    m_courseTaskStack->addWidget(testingStage);
+    QPushButton* submitAttempt = new QPushButton("Submit Attempt → Verification");
+    testingLayout->addWidget(submitAttempt);
+    m_courseTaskStack->addWidget(scrollable(testingStage));
 
-    // Stage 3: Saved review. The learner sees the evidence and then moves forward.
-    QWidget* reviewStage = new QWidget;
-    QVBoxLayout* reviewLayout = new QVBoxLayout(reviewStage);
-    reviewLayout->addWidget(smallTitle("4. Saved review - explain what you learned"));
-    m_databaseBody = readOnlyText(420);
-    reviewLayout->addWidget(m_databaseBody, 1);
-    QLabel* reviewPrompt = new QLabel("Before moving on, write what failed, what fixed it, and what pattern you used in the left review notes box. Then save the checkpoint.");
-    reviewPrompt->setWordWrap(true);
-    reviewLayout->addWidget(reviewPrompt);
-    m_courseTaskStack->addWidget(reviewStage);
+    QWidget* verificationStage = new QWidget;
+    QVBoxLayout* verificationLayout = new QVBoxLayout(verificationStage);
+    verificationLayout->addWidget(smallTitle("4. Verification: Prove Correctness"));
+    QLabel* verifyHint = new QLabel("Verification runs real test cases and asks you to interpret the result. Fix the code until the real behavior matches the expected outputs.");
+    verifyHint->setWordWrap(true);
+    verificationLayout->addWidget(verifyHint);
+    m_runnerContext = new QLabel;
+    m_runnerContext->setWordWrap(true);
+    m_runnerCommandPreview = readOnlyText(120);
+    QPushButton* verifyCorrect = new QPushButton("Verify Correct");
+    m_runnerOutput = new QTextEdit;
+    m_runnerOutput->setMinimumHeight(500);
+    verificationLayout->addWidget(m_runnerContext);
+    verificationLayout->addWidget(m_runnerCommandPreview);
+    verificationLayout->addWidget(verifyCorrect);
+    verificationLayout->addWidget(m_runnerOutput, 1);
+    m_courseTaskStack->addWidget(scrollable(verificationStage));
+
+    QWidget* saveStage = new QWidget;
+    QVBoxLayout* saveLayout = new QVBoxLayout(saveStage);
+    saveLayout->addWidget(smallTitle("5. Save Finished Lesson"));
+    QLabel* saveHint = new QLabel("Save the completed lesson only after lesson, coaching, testing, and verification are finished. Your saved work appears in the finished-lessons panel.");
+    saveHint->setWordWrap(true);
+    saveLayout->addWidget(saveHint);
+    m_databaseBody = readOnlyText(300);
+    saveLayout->addWidget(m_databaseBody, 1);
+    QPushButton* saveFinished = new QPushButton("Save Finished Lesson");
+    QPushButton* nextLesson = new QPushButton("Next Lesson");
+    QHBoxLayout* saveButtons = new QHBoxLayout;
+    saveButtons->addWidget(saveFinished);
+    saveButtons->addWidget(nextLesson);
+    saveLayout->addLayout(saveButtons);
+    m_courseTaskStack->addWidget(scrollable(saveStage));
 
     taskLayout->addWidget(m_courseTaskStack, 1);
-
-    QHBoxLayout* navigation = new QHBoxLayout;
-    QPushButton* backTask = new QPushButton("Back one task");
-    QPushButton* nextTask = new QPushButton("Finish current task → Next");
-    QPushButton* nextLesson = new QPushButton("Start next lesson");
-    navigation->addWidget(backTask);
-    navigation->addWidget(nextTask);
-    navigation->addWidget(nextLesson);
-    taskLayout->addLayout(navigation);
     split->addWidget(taskCard);
+
+    QFrame* savedCard = card();
+    QVBoxLayout* savedLayout = new QVBoxLayout(savedCard);
+    savedLayout->addWidget(smallTitle("Finished lessons / saved work"));
+    QLabel* savedHint = new QLabel("This panel is separate from the available lessons. It only shows completed lessons, test attempts, and saved reflections.");
+    savedHint->setWordWrap(true);
+    savedLayout->addWidget(savedHint);
+    m_completedHistoryList = new QListWidget;
+    m_completedHistoryList->setMinimumWidth(310);
+    savedLayout->addWidget(m_completedHistoryList, 1);
+    savedLayout->addWidget(smallTitle("Saved notes / reflection"));
+    m_reviewEditor = new QTextEdit;
+    m_reviewEditor->setMinimumHeight(230);
+    m_reviewEditor->setPlaceholderText("Review or edit notes for a finished lesson here.");
+    savedLayout->addWidget(m_reviewEditor);
+    QPushButton* saveNotesOnly = new QPushButton("Save Notes");
+    savedLayout->addWidget(saveNotesOnly);
+    split->addWidget(savedCard);
+
     split->setStretchFactor(0, 0);
     split->setStretchFactor(1, 1);
+    split->setStretchFactor(2, 0);
     outerLayout->addWidget(split, 1);
 
     m_runnerProcess = new QProcess(this);
@@ -433,25 +480,50 @@ QWidget* MainWindow::createGuidedBootcampPage()
     connect(m_runnerLanguage, &QComboBox::currentIndexChanged, this, [this](int index) { selectLanguageTrack(index); });
     connect(m_lessonList, &QListWidget::currentRowChanged, this, [this](int index) { m_courseStageIndex = 0; selectLesson(index); });
     connect(m_exerciseList, &QListWidget::currentRowChanged, this, [this](int index) { selectExercise(index); });
-    connect(m_quizList, &QListWidget::currentRowChanged, this, [this](int index) { selectQuiz(index); });
     connect(m_completedHistoryList, &QListWidget::currentRowChanged, this, [this](int index) { selectHistoryItem(index); });
     connect(m_helperPhaseSelector, &QComboBox::currentTextChanged, this, [this] { refreshAllTabs(); });
     connect(m_helperTimer, &QTimer::timeout, this, [this] { tickHelperTimer(); });
 
-    connect(startTimer, &QPushButton::clicked, this, [this] { startHelperTimer(); });
-    connect(pauseTimer, &QPushButton::clicked, this, [this] { pauseHelperTimer(); });
-    connect(resetTimer, &QPushButton::clicked, this, [this] { resetHelperTimer(); });
-    connect(popup, &QPushButton::clicked, this, [this] { showHelperPopup(); });
-    connect(saveCheckpoint, &QPushButton::clicked, this, [this] { saveCurrentCourseCheckpoint("manual_review_saved"); });
-    connect(backTask, &QPushButton::clicked, this, [this] { if (m_courseStageIndex > 0) --m_courseStageIndex; refreshAllTabs(); });
-    connect(nextTask, &QPushButton::clicked, this, [this] { advanceCourseStage(); });
+    connect(checkAnswer, &QPushButton::clicked, this, [this]
+    {
+        QuizQuestion* quiz = currentQuizQuestion();
+        if (!quiz || !m_quizChoices || !m_quizFeedback) return;
+        const int selected = m_quizChoices->currentRow();
+        if (selected == quiz->correctIndex)
+        {
+            m_quizFeedback->setText("Correct. " + quiz->explanation + " Now prove it by coding and running the connected exercise.");
+            m_progress.setCompleted(quiz->id, true);
+            m_progress.recordStudyEvent(quiz->id, "testing_question_passed", 5, quiz->question);
+        }
+        else
+        {
+            m_quizFeedback->setText("Not yet. " + quiz->explanation + " Reconnect this answer to the lesson and coaching walkthrough before submitting your code.");
+        }
+    });
+
+    connect(lessonNext, &QPushButton::clicked, this, [this] { advanceCourseStage(); });
+    connect(coachingNext, &QPushButton::clicked, this, [this] { advanceCourseStage(); });
+    connect(submitAttempt, &QPushButton::clicked, this, [this]
+    {
+        saveSourceCodeForRunner();
+        recordRunnerAttempt("submitted_for_verification");
+        saveCurrentCourseCheckpoint("testing_submitted");
+        m_courseStageIndex = 3;
+        refreshAllTabs();
+    });
+    connect(saveFinished, &QPushButton::clicked, this, [this]
+    {
+        saveCurrentCourseCheckpoint("finished_lesson_saved");
+        QMessageBox::information(this, "Saved", "Finished lesson saved. You can find it in the Finished lessons / saved work panel.");
+        refreshAllTabs();
+    });
     connect(nextLesson, &QPushButton::clicked, this, [this]
     {
         saveCurrentCourseCheckpoint("lesson_sequence_finished");
         Module* module = currentModule();
         if (module && m_currentLessonIndex + 1 < module->lessons.size())
         {
-            m_currentLessonIndex++;
+            ++m_currentLessonIndex;
             if (m_currentLessonIndex < module->exercises.size()) m_currentExerciseIndex = m_currentLessonIndex;
             if (m_currentLessonIndex < module->quiz.size()) m_currentQuizIndex = m_currentLessonIndex;
             m_courseStageIndex = 0;
@@ -459,22 +531,12 @@ QWidget* MainWindow::createGuidedBootcampPage()
         }
         refreshAllTabs();
     });
+    connect(saveNotesOnly, &QPushButton::clicked, this, [this] { saveCurrentCourseCheckpoint("notes_updated"); });
 
-    connect(checkQuiz, &QPushButton::clicked, this, [this]
-    {
-        QuizQuestion* q = currentQuizQuestion();
-        if (!q || !m_quizChoices) return;
-        const bool correct = m_quizChoices->currentRow() == q->correctIndex;
-        m_quizFeedback->setText((correct ? "Correct. " : "Not quite. ") + q->explanation);
-        m_progress.recordStudyEvent(q->id, correct ? "quiz_correct" : "quiz_missed", 5, q->question);
-        if (correct)
-        {
-            m_progress.setCompleted(q->id, true);
-            saveCurrentCourseCheckpoint("questions_passed");
-            m_courseStageIndex = 2;
-        }
-        refreshAllTabs();
-    });
+    connect(startTimer, &QPushButton::clicked, this, [this] { startHelperTimer(); });
+    connect(pauseTimer, &QPushButton::clicked, this, [this] { pauseHelperTimer(); });
+    connect(resetTimer, &QPushButton::clicked, this, [this] { resetHelperTimer(); });
+    connect(popup, &QPushButton::clicked, this, [this] { showHelperPopup(); });
     connect(build, &QPushButton::clicked, this, [this] { runRunnerAction("build"); });
     connect(run, &QPushButton::clicked, this, [this] { runRunnerAction("run"); });
     connect(test, &QPushButton::clicked, this, [this] { runRunnerAction("test"); });
@@ -496,7 +558,7 @@ QWidget* MainWindow::createDashboardPage()
     QWidget* page = new QWidget;
     QVBoxLayout* layout = new QVBoxLayout(page);
     layout->setSpacing(12);
-    layout->addWidget(header("CS Bootcamp Desktop v28 - One Task at a Time Bootcamp"));
+    layout->addWidget(header("CS Bootcamp Desktop v35 - Split-Topic Deep Lessons"));
     m_dashboardSummary = new QLabel;
     m_dashboardSummary->setWordWrap(true);
     m_dashboardProgress = new QProgressBar;
@@ -1013,51 +1075,75 @@ QString MainWindow::currentContextId() const
 QString MainWindow::lessonDetailText(const Lesson& lesson) const
 {
     QString text;
-    text += "OBJECTIVE\n" + lesson.objective + "\n\n";
-    text += "DETAILED EXPLANATION\n" + lesson.explanation + "\n\n";
-    text += "HOW TO COMPLETE THIS OBJECTIVE USING THE v28 GUIDED PROBLEM-SOLVING LOOP\n";
-    text += "1. Understand: rewrite the objective as a problem statement, list inputs, outputs, and constraints.\n";
-    text += "2. Plan: choose a pattern before coding. Ask whether the problem is counting, searching, transforming, validating, traversing, or optimizing.\n";
-    text += "3. Trace: work one tiny example by hand and write the expected output before touching code.\n";
-    text += "4. Implement: code the simplest readable solution first; do not optimize early.\n";
-    text += "5. Verify: run the Exercise Runner real tests and compare actual behavior against expected behavior.\n";
-    text += "6. Debug: if a test fails, identify whether the failure is input parsing, state update, edge case, output format, or algorithm choice.\n";
-    text += "7. Refactor: improve names, structure, and complexity only after correctness is proven.\n";
-    text += "8. Explain: answer the quiz and explain your solution without looking at the code.\n\n";
-    text += "CHECKLIST WITH HOW-TO STEPS\n";
+    text += "OBJECTIVE\n";
+    text += lesson.objective + "\n\n";
+
+    text += "WHAT YOU ARE LEARNING\n";
+    text += lesson.explanation + "\n\n";
+
+    text += "WHY THIS MATTERS\n";
+    text += "This objective connects directly to the coding problem, the testing question, and the verifier. Do not treat this as reading-only material. By the end of this lesson you should be able to explain the concept, recognize when to use it, solve the connected problem, and prove the solution with tests.\n\n";
+
+    text += "EXAMPLE\n";
+    text += lesson.workedExample.isEmpty()
+        ? QString("Trace one small input by hand. Name the input, expected output, state, and rule used at each step.\n\n")
+        : lesson.workedExample + "\n\n";
+
+    text += "LESSON MAP\n";
+    text += "1. Lesson: learn the objective and example.\n";
+    text += "2. Coaching: study one coding problem and its solution walkthrough.\n";
+    text += "3. Testing: answer a question that checks this exact objective, then code the connected exercise.\n";
+    text += "4. Verification: run real behavior checks that prove the objective was learned.\n";
+    text += "5. Save: record what you learned and move to the next lesson.\n\n";
+
+    text += "CHECKLIST: WHAT MUST BE TRUE BEFORE YOU CONTINUE\n";
     int step = 1;
     for (const QString& item : lesson.checklist)
     {
         text += QString::number(step++) + ". " + item + "\n";
-        text += "   How to do it: define the term, create a small input/output example, predict the result, identify one edge case, and connect it to the selected exercise.\n";
     }
-    text += "\nPRACTICE ITEMS WITH INSTRUCTIONS\n";
+
+    text += "\nPRACTICE BEFORE COACHING\n";
     step = 1;
     for (const QString& item : lesson.practicePrompts)
     {
         text += QString::number(step++) + ". " + item + "\n";
-        text += "   Do this by writing the input, expected output, chosen pattern, first attempt, failed test if any, fix made, and final explanation.\n";
     }
+
+    text += "\nCONNECTED COACHING PROBLEM\n";
+    text += lesson.coachedProblem.isEmpty()
+        ? QString("The next step will show the coding problem and walkthrough for this objective.\n")
+        : lesson.coachedProblem + "\n";
+
+    text += "\nNEXT ACTION\n";
+    text += "Click Next: Coaching only when you can say the objective, the example, and the expected behavior in plain English.\n";
     return text;
 }
 
 QString MainWindow::exerciseDetailText(const Exercise& exercise) const
 {
     QString text;
-    text += "DIFFICULTY: " + exercise.difficulty + "\n\n";
-    text += "PROMPT\n" + exercise.prompt + "\n\n";
-    text += "EXPECTED CONCEPTS\n" + exercise.expectedConcepts + "\n\n";
-    text += "HOW TO SOLVE THIS EFFICIENTLY\n";
-    text += "1. Classify the problem: parsing, counting, search, traversal, validation, optimization, or simulation.\n";
-    text += "2. Write the function contract: what input comes in, what output must come out, and what must never happen.\n";
-    text += "3. Build a tiny hand-trace table before coding: step, variable state, decision, output.\n";
-    text += "4. Implement the simplest correct version first. Make the program easy to test from standard input.\n";
-    text += "5. Run Verify Correct. The app compiles/runs your code, feeds tests, captures output, and compares behavior.\n";
-    text += "6. When a test fails, use the failure category: wrong parsing, wrong loop boundary, wrong state update, missing edge case, wrong output format, or wrong algorithm.\n";
-    text += "7. Improve efficiency: describe the Big-O cost, then decide whether a better data structure or pattern is needed.\n";
-    text += "8. Explain the final solution in three sentences: approach, correctness reason, complexity.\n\n";
-    text += "CORRECTNESS EXPECTATION\n";
-    text += "The built-in verifier now runs real input/output checks. A marker string alone is not accepted. Expected behavior is shown in the verification report.\n";
+    const Module* module = (m_currentModuleIndex >= 0 && m_currentModuleIndex < m_modules.size()) ? &m_modules[m_currentModuleIndex] : nullptr;
+    const Lesson* lesson = (module && m_currentLessonIndex >= 0 && m_currentLessonIndex < module->lessons.size()) ? &module->lessons[m_currentLessonIndex] : nullptr;
+
+    text += "OBJECTIVE BEING TESTED\n";
+    text += lesson ? lesson->objective + "\n\n" : QString("No lesson objective selected.\n\n");
+
+    text += "CODING TASK\n";
+    text += exercise.prompt + "\n\n";
+
+    text += "CONCEPTS YOU MUST USE\n";
+    text += exercise.expectedConcepts + "\n\n";
+
+    text += "TESTING STAGE CHECKLIST\n";
+    text += "1. Answer the lesson-matched question above before coding.\n";
+    text += "2. Write the smallest solution that satisfies the task.\n";
+    text += "3. Build or run the program in the selected language.\n";
+    text += "4. Read any error message and fix the first real cause.\n";
+    text += "5. Submit the attempt to move into Verification.\n\n";
+
+    text += "WHAT VERIFICATION WILL LOOK FOR\n";
+    text += "The verifier checks real behavior: input is provided, your program runs, output is captured, and expected evidence is compared. A fake PASS marker alone is not accepted as proof.\n";
     return text;
 }
 
@@ -1241,24 +1327,47 @@ QString MainWindow::helperPopupText(const QString& phase) const
 
 QString MainWindow::advancedHelperText() const
 {
+    const Module* module = (m_currentModuleIndex >= 0 && m_currentModuleIndex < m_modules.size()) ? &m_modules[m_currentModuleIndex] : nullptr;
+    const Lesson* lesson = (module && m_currentLessonIndex >= 0 && m_currentLessonIndex < module->lessons.size()) ? &module->lessons[m_currentLessonIndex] : nullptr;
+    const Exercise* exercise = (module && m_currentExerciseIndex >= 0 && m_currentExerciseIndex < module->exercises.size()) ? &module->exercises[m_currentExerciseIndex] : nullptr;
+
     QString text;
-    text += "ADVANCED HELPER WORKFLOW\n";
-    text += "The helper keeps you from jumping straight into random code. Use it while solving the selected exercise.\n\n";
-    text += "Current phase: " + currentHelperPhase() + "\n";
-    text += "Timer: " + formatHelperTimer() + "\n\n";
+    text += "COACHING STEP\n";
+    text += "This screen has only two jobs: define the coding problem and walk you through the solution approach. Questions and grading happen later in Testing and Verification.\n\n";
+
+    text += "OBJECTIVE\n";
+    text += lesson ? lesson->objective + "\n\n" : QString("No lesson selected.\n\n");
+
+    text += "CODING PROBLEM\n";
+    if (lesson && !lesson->coachedProblem.isEmpty()) text += lesson->coachedProblem + "\n\n";
+    if (exercise)
+    {
+        text += "Connected exercise: " + exercise->title + "\n";
+        text += exercise->prompt + "\n\n";
+    }
+
+    text += "SOLUTION WALKTHROUGH\n";
+    text += "1. Restate the required output. If you cannot describe the output, do not code yet.\n";
+    text += "2. Identify the input shape: single value, list, text, graph, table, request, or design artifact.\n";
+    text += "3. Choose the pattern that matches the objective: counting, lookup, traversal, parsing, validation, simulation, design, or dynamic programming.\n";
+    text += "4. Name the state you must maintain: counter, map, set, stack, queue, index boundaries, visited set, table row, or current object.\n";
+    text += "5. Trace the provided example by hand and write the expected output before coding.\n";
+    text += "6. Implement the smallest correct version first. Do not optimize until behavior is verified.\n";
+    text += "7. Use the verifier result to locate the first wrong assumption, not to randomly rewrite the program.\n";
+    text += "8. After passing, explain time complexity, space complexity, and why the output is correct.\n\n";
+
+    text += "SOLUTION PLAN TO WRITE BEFORE TESTING\n";
+    text += "Input: ____\n";
+    text += "Output: ____\n";
+    text += "Pattern: ____\n";
+    text += "State/data structure: ____\n";
+    text += "Algorithm steps: 1) ____ 2) ____ 3) ____\n";
+    text += "Edge cases: ____\n";
+    text += "Complexity: ____\n\n";
+
+    text += "TIMER PHASE\n" + currentHelperPhase() + "\n";
     text += helperPopupText(currentHelperPhase()) + "\n\n";
-    text += "REAL-TIME TIMER PLAN\n";
-    text += "0:00-2:00   Understand the prompt.\n";
-    text += "2:00-4:00   Define inputs, outputs, constraints, and edge cases.\n";
-    text += "4:00-6:00   Choose a pattern and justify it.\n";
-    text += "6:00-8:00   Trace a tiny example by hand.\n";
-    text += "8:00-14:00  Implement the smallest correct version.\n";
-    text += "14:00-16:00 Run real verification.\n";
-    text += "16:00-18:00 Debug the first wrong state.\n";
-    text += "18:00-19:00 Refactor safely.\n";
-    text += "19:00-20:00 Explain correctness and complexity.\n\n";
-    text += "HOW THE POP-UPS HELP\n";
-    text += "Each pop-up gives a focused checkpoint for the current phase. The goal is to train the habit of thinking in a professional order instead of guessing, running, and hoping.";
+    text += "NEXT ACTION\nClick Next: Testing when your solution plan is clear enough that you could explain it to an interviewer before writing code.";
     return text;
 }
 
@@ -1271,8 +1380,14 @@ QString MainWindow::moduleSummaryText(const Module& module) const
 QString MainWindow::quizSummaryText() const
 {
     const Module* module = (m_currentModuleIndex >= 0 && m_currentModuleIndex < m_modules.size()) ? &m_modules[m_currentModuleIndex] : nullptr;
+    const Lesson* lesson = (module && m_currentLessonIndex >= 0 && m_currentLessonIndex < module->lessons.size()) ? &module->lessons[m_currentLessonIndex] : nullptr;
     if (!module) return {};
-    return QString("Quiz bank for %1 contains %2 questions in v28. Questions now emphasize problem classification, pattern choice, debugging failed tests, complexity reasoning, and explaining correctness.").arg(module->title).arg(module->quiz.size());
+    QString text;
+    text += "This question checks the same objective you just learned and coached.\n";
+    if (lesson) text += "Objective: " + lesson->objective + "\n";
+    text += "Module: " + module->title + "\n";
+    text += "Answer it before relying on the code editor. The point is to prove you understand the idea, not just that the program can run.";
+    return text;
 }
 
 QString MainWindow::expectedOutputTokenForExercise(const Exercise& exercise) const
@@ -1294,7 +1409,7 @@ QString MainWindow::expectedOutputTokenForExercise(const Exercise& exercise) con
 
 QString MainWindow::starterFolderForExercise(const QString& languageId, const Exercise& exercise) const
 {
-    const QString base = QCoreApplication::applicationDirPath() + "/examples/v28_gated_course_exercises";
+    const QString base = QCoreApplication::applicationDirPath() + "/examples/v35_objective_aligned_exercises";
     const QString folder = base + "/" + languageId + "/" + exercise.id;
     return folder;
 }
@@ -1408,7 +1523,7 @@ void MainWindow::verifyRunnerOutput()
     const QVector<VerificationCase> cases = verificationCasesForExerciseId(exercise->id);
 
     m_lastRunnerOutput.clear();
-    appendRunnerOutput("\n[VERIFY] v28 gated real verifier started. It checks behavior, then asks you to review the problem-solving process.\n");
+    appendRunnerOutput("\n[VERIFY] v35 lesson-aligned verifier started. It checks behavior practiced in the lesson, coaching walkthrough, and testing stage.\n");
     appendRunnerOutput("[VERIFY] Source file: " + sourceFileForRunner() + "\n");
     appendRunnerOutput("[VERIFY] Working folder: " + folder + "\n");
 
@@ -1501,7 +1616,7 @@ void MainWindow::verifyRunnerOutput()
         m_progress.setCompleted(exercise->id, true);
         recordRunnerAttempt("verified_correct_by_real_tests");
         saveCurrentCourseCheckpoint("verification_passed");
-        m_courseStageIndex = 3;
+        m_courseStageIndex = 4;
     }
     else
     {
@@ -1527,7 +1642,7 @@ void MainWindow::recordRunnerAttempt(const QString& status)
     LanguageTrack* track = currentLanguageTrack();
     Module* module = currentModule();
     if (!exercise || !track || !module) return;
-    m_progress.recordCodeAttempt(track->name, module->title, exercise->id, exercise->difficulty, commandForRunner("run"), m_lastRunnerOutput.left(500), status, "Recorded from v28 gated testing and verification stage.");
+    m_progress.recordCodeAttempt(track->name, module->title, exercise->id, exercise->difficulty, commandForRunner("run"), m_lastRunnerOutput.left(500), status, "Recorded from v35 complete-curriculum step-by-step testing and verification stage.");
 }
 
 void MainWindow::prepareAlgorithmSteps()
@@ -1611,15 +1726,15 @@ void MainWindow::exportProgressSummary()
 {
     const QString folder = QCoreApplication::applicationDirPath() + "/progress_exports";
     QDir().mkpath(folder);
-    QFile file(folder + "/v28_gated_course_progress_summary.md");
+    QFile file(folder + "/v35_complete_curriculum_progress_summary.md");
     if (file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         QTextStream out(&file);
-        out << "# CS Bootcamp Desktop v28 Progress Summary\n\n";
+        out << "# CS Bootcamp Desktop v35 Progress Summary\n\n";
         out << m_progress.exportMarkdownSummary();
         out << "\n\n## Code Attempts\n\n" << m_progress.codeAttemptMarkdown();
     }
-    QMessageBox::information(this, "Exported", "Progress summary exported to progress_exports/v28_gated_course_progress_summary.md");
+    QMessageBox::information(this, "Exported", "Progress summary exported to progress_exports/v35_complete_curriculum_progress_summary.md");
 }
 
 void MainWindow::recordProblemSolvingDrill()
@@ -1630,7 +1745,7 @@ void MainWindow::recordProblemSolvingDrill()
     const QString moduleName = module ? module->title : "Problem Solving";
     const QString pattern = m_problemPatternSelector ? m_problemPatternSelector->currentText() : "Universal Problem-Solving Loop";
 
-    m_progress.recordStudyEvent(itemId, "problem_solving_drill", 20, "Completed v28 drill using pattern: " + pattern);
+    m_progress.recordStudyEvent(itemId, "problem_solving_drill", 20, "Completed v35 drill using pattern: " + pattern);
     m_progress.updateSkillMastery(moduleName + " - Problem Solving", 65, "Practiced classification, planning, tracing, verification, debugging, and explanation.");
 
     QMessageBox::information(this, "Drill Recorded", "Recorded a 20-minute problem-solving drill for the current course context.");
@@ -1735,34 +1850,34 @@ void MainWindow::advanceCourseStage()
     {
         if (Lesson* lesson = currentLesson())
         {
-            m_progress.setCompleted(lesson->id, true);
-            m_progress.recordStudyEvent(lesson->id, "lesson_gate_completed", 20, "Finished the lesson/coaching gate in v28.");
+            m_progress.recordStudyEvent(lesson->id, "lesson_read", 10, "Finished the lesson explanation step in v35.");
         }
-        saveCurrentCourseCheckpoint("lesson_gate_completed");
+        saveCurrentCourseCheckpoint("lesson_step_completed");
         m_courseStageIndex = 1;
     }
     else if (m_courseStageIndex == 1)
     {
-        QuizQuestion* q = currentQuizQuestion();
-        if (q && m_quizChoices && m_quizChoices->currentRow() == q->correctIndex)
+        if (Lesson* lesson = currentLesson())
         {
-            m_progress.setCompleted(q->id, true);
-            m_progress.recordStudyEvent(q->id, "question_gate_completed", 5, "Passed the required question gate in v28.");
-            saveCurrentCourseCheckpoint("question_gate_completed");
-            m_courseStageIndex = 2;
+            m_progress.recordStudyEvent(lesson->id, "coaching_walkthrough_completed", 10, "Finished the problem and solution walkthrough before testing in v35.");
         }
-        else
-        {
-            QMessageBox::information(this, "Question gate", "Answer the checkpoint question correctly before testing is unlocked.");
-        }
+        saveCurrentCourseCheckpoint("coaching_walkthrough_completed");
+        m_courseStageIndex = 2;
     }
     else if (m_courseStageIndex == 2)
     {
-        QMessageBox::information(this, "Testing gate", "Run Verify Correct before this task is marked finished. The verifier will move you to Saved Review when it records the attempt.");
+        saveSourceCodeForRunner();
+        recordRunnerAttempt("submitted_for_verification");
+        saveCurrentCourseCheckpoint("testing_submitted");
+        m_courseStageIndex = 3;
+    }
+    else if (m_courseStageIndex == 3)
+    {
+        QMessageBox::information(this, "Verification step", "Run Verify Correct. When the real tests pass, save the finished lesson.");
     }
     else
     {
-        saveCurrentCourseCheckpoint("review_gate_completed");
+        saveCurrentCourseCheckpoint("finished_lesson_saved");
         Module* module = currentModule();
         if (module && m_currentLessonIndex + 1 < module->lessons.size())
         {
@@ -1776,6 +1891,7 @@ void MainWindow::advanceCourseStage()
     refreshAllTabs();
 }
 
+
 void MainWindow::saveCurrentCourseCheckpoint(const QString& status)
 {
     const QString lessonId = currentLesson() ? currentLesson()->id : currentContextId();
@@ -1787,11 +1903,12 @@ void MainWindow::saveCurrentCourseCheckpoint(const QString& status)
     const QString notes = m_reviewEditor ? m_reviewEditor->toPlainText().trimmed() : QString();
     const QString checkpointText = QString("Module: %1\nLesson: %2\nExercise: %3\nLanguage: %4\nStage: %5\nStatus: %6\n\nLearner notes:\n%7")
         .arg(moduleName, lessonName, exerciseName, language, QString::number(m_courseStageIndex + 1), status, notes.isEmpty() ? "No notes yet." : notes);
-    m_progress.setNotesFor(lessonId + "_v28_checkpoint", checkpointText);
+    m_progress.setNotesFor(lessonId + "_v35_checkpoint", checkpointText);
     m_progress.recordStudyEvent(lessonId, status, 5, checkpointText.left(900));
-    if (status.contains("completed") || status.contains("passed") || status.contains("saved"))
+    if (status.contains("completed") || status.contains("passed") || status.contains("saved") || status.contains("finished"))
     {
-        m_progress.setCompleted(lessonId + "_v28_" + status, true);
+        m_progress.setCompleted(lessonId + "_v35_" + status, true);
+        if (status.contains("finished")) m_progress.setCompleted(lessonId, true);
     }
     refreshHistoryPane();
 }
@@ -1805,7 +1922,7 @@ void MainWindow::refreshHistoryPane()
     {
         for (const Lesson& lesson : module.lessons)
         {
-            if (m_progress.isCompleted(lesson.id) || !m_progress.notesFor(lesson.id + "_v28_checkpoint").isEmpty())
+            if (m_progress.isCompleted(lesson.id) || !m_progress.notesFor(lesson.id + "_v35_checkpoint").isEmpty())
             {
                 m_completedHistoryList->addItem("✓ Lesson: " + lesson.title);
             }
@@ -1843,7 +1960,7 @@ void MainWindow::selectHistoryItem(int index)
         {
             if (label.contains(lesson.title))
             {
-                found = m_progress.notesFor(lesson.id + "_v28_checkpoint");
+                found = m_progress.notesFor(lesson.id + "_v35_checkpoint");
                 if (found.isEmpty()) found = "Completed lesson: " + lesson.title + "\n\n" + lessonDetailText(lesson).left(1200);
                 break;
             }
@@ -1903,12 +2020,12 @@ void MainWindow::refreshAllTabs()
     }
     if (m_courseStageTitle)
     {
-        const QStringList names = {"Lesson + Coaching", "Questions", "Testing + Verification", "Saved Review"};
-        m_courseStageTitle->setText("Current task: " + names.value(m_courseStageIndex, "Course task"));
+        const QStringList names = {"Lesson", "Coaching", "Testing", "Verification", "Save"};
+        m_courseStageTitle->setText("Step: " + names.value(m_courseStageIndex, "Course task"));
     }
     if (m_courseGateLabel)
     {
-        m_courseGateLabel->setText(QString("Only the current gate is shown. Finish this task to unlock the next one. Context: %1 → %2 → %3")
+        m_courseGateLabel->setText(QString("One required step is shown at a time. The lesson, coaching, testing, and verification all target the same objective. Context: %1 → %2 → %3")
             .arg(module ? module->title : "No module")
             .arg(lesson ? lesson->title : "No lesson")
             .arg(track ? track->name : "No language"));
@@ -1934,7 +2051,7 @@ void MainWindow::refreshAllTabs()
         m_dashboardProgress->setValue(std::min(completed, totalItems));
         m_dashboardProgress->setFormat(QString("%1 / %2 completed").arg(std::min(completed, totalItems)).arg(totalItems));
     }
-    if (m_dashboardPlan) m_dashboardPlan->setPlainText("v28 focuses the app on becoming faster and more disciplined at coding problem solving. The course now follows one gated loop: one lesson and coaching task at a time, then questions, then testing and verification, then saved review history in the left pane.\n\nUse the helper on every exercise: start the 20-minute timer, move through each phase, read the pop-up checkpoints, implement the smallest correct version, run real verification, debug the first wrong state, refactor, and explain complexity.");
+    if (m_dashboardPlan) m_dashboardPlan->setPlainText("v35 focuses the app on becoming faster and more disciplined at coding problem solving. The course now follows one gated loop: lesson, coaching walkthrough, testing questions plus coding, verification, then saved review history in the right pane.\n\nUse the helper on every exercise: start the 20-minute timer, move through each phase, read the pop-up checkpoints, implement the smallest correct version, run real verification, debug the first wrong state, refactor, and explain complexity.");
 
     if (m_lessonTitle && lesson) m_lessonTitle->setText(lesson->title);
     if (m_lessonBody && lesson) m_lessonBody->setPlainText(lessonDetailText(*lesson));
@@ -1956,6 +2073,13 @@ void MainWindow::refreshAllTabs()
         m_helperPhaseProgress->setValue(std::min(m_helperElapsedSeconds, m_helperTargetSeconds));
     }
     if (m_helperBody) m_helperBody->setPlainText(advancedHelperText());
+    if (m_coachingResponseEditor && lesson && m_coachingResponseEditor->toPlainText().isEmpty())
+    {
+        QString worksheet;
+        worksheet += "My answers for: " + lesson->title + "\n\n";
+        worksheet += "Input: ____\nOutput: ____\nPattern: ____\nData structure: ____\nEdge case: ____\nVerification test: ____\nCode plan: ____\n";
+        m_coachingResponseEditor->setPlainText(worksheet);
+    }
 
     if (m_runnerContext && module && exercise && track)
     {
@@ -1983,9 +2107,9 @@ void MainWindow::refreshAllTabs()
         m_languageBody->setPlainText("Professional use:\n" + track->professionalUse + "\n\nWhy learn it:\n" + track->whyLearnIt + "\n\nSetup command:\n" + track->setupCommand + "\n\nInstall checks:\n" + bullets(track->installChecks) + "\nRun commands:\n" + bullets(track->runCommands) + "\nStarter files:\n" + bullets(track->starterFiles) + "\nFirst-week plan:\n" + numbered(track->firstWeekPlan) + "\nCore topics:\n" + bullets(track->coreTopics) + "\nBeginner milestones:\n" + bullets(track->beginnerMilestones) + "\nProfessional milestones:\n" + bullets(track->professionalMilestones));
     }
 
-    if (m_contentBody && module) m_contentBody->setPlainText("Current module content pack\n\n" + moduleSummaryText(*module) + "\n\nEvery lesson now includes a problem-solving loop, checklist how-to steps, practice instructions, and runner verification guidance. v28 adds deliberate practice patterns so learners build speed through repeatable thinking, not random guessing.");
+    if (m_contentBody && module) m_contentBody->setPlainText("Current module content pack\n\n" + moduleSummaryText(*module) + "\n\nEvery lesson now has a clear objective, a topic-specific explanation, a connected coaching problem, a matched testing question, and a verifier task that checks the same skill.");
     if (m_databaseBody) m_databaseBody->setPlainText("Database path:\n" + m_progress.databasePath() + "\n\nCompleted items: " + QString::number(m_progress.completedCount()) + "\nSaved notes from older versions: " + QString::number(m_progress.notesCount()) + "\nStudy events: " + QString::number(m_progress.studyEventCount()) + "\nCode attempts: " + QString::number(m_progress.codeAttemptCount()) + "\n\nRecent study events:\n" + m_progress.recentStudyEvents(8).join("\n") + "\n\nRecent code attempts:\n" + m_progress.codeAttemptRows(8).join("\n"));
-    if (m_instructorBody && module) m_instructorBody->setPlainText("Instructor view for current module:\n\n" + module->title + "\n\nAssignment design:\n1. Require the learner to complete the detailed lesson checklist.\n2. Require real verifier evidence from the connected exercise runner.\n3. Require quiz mastery for the module.\n4. Require a v28 problem-solving drill record explaining classification, chosen pattern, failed test, fix, and complexity.\n\nRubric: concept explanation, working code, verification evidence, debugging reflection, professional readability.");
+    if (m_instructorBody && module) m_instructorBody->setPlainText("Instructor view for current module:\n\n" + module->title + "\n\nAssignment design:\n1. Require the learner to complete the detailed lesson checklist.\n2. Require real verifier evidence from the connected exercise runner.\n3. Require quiz mastery for the module.\n4. Require a v35 problem-solving drill record explaining classification, chosen pattern, failed test, fix, and complexity.\n\nRubric: concept explanation, working code, verification evidence, debugging reflection, professional readability.");
     if (m_capstoneBody) m_capstoneBody->setPlainText("Final capstone now builds from verified practice history. The learner should choose one advanced capstone only after completing lessons, exercises, quizzes, and code-attempt records in the selected specialization.");
     if (m_algorithmOutput && m_algorithmSteps.isEmpty()) resetAlgorithm();
 }
