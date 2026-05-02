@@ -1,0 +1,1 @@
+const fs=require("fs"); const lines=fs.readFileSync(0,"utf8").trim().split(/\r?\n/).slice(1); const vals=lines.filter(Boolean).map(x=>Number(x.split(",")[1])); console.log(vals.reduce((a,b)=>a+b,0)); console.log(Math.max(...vals)); console.log(vals.length);

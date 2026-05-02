@@ -1,0 +1,2 @@
+declare const require: any;
+const fs=require("fs"); const l=fs.readFileSync(0,"utf8").trim().split(/\r?\n/); const nums=(l[0]||"2 7 11 15").split(/\s+/).map(Number); const target=Number(l[1]||9); const seen=new Map(); for(let i=0;i<nums.length;i++){let need=target-nums[i]; if(seen.has(need)){console.log(seen.get(need),i); break;} seen.set(nums[i],i);}

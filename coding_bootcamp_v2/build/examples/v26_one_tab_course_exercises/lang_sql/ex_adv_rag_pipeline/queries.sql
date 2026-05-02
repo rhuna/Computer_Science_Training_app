@@ -1,0 +1,1 @@
+SELECT 'retrieve rank cite';

@@ -1,0 +1,2 @@
+declare const require: any;
+const fs=require("fs"); const words=fs.readFileSync(0,"utf8").toLowerCase().match(/[a-z0-9_]+/g)||[]; const m=new Map(); for(const w of words)m.set(w,(m.get(w)||0)+1); for(const [k,v] of m) console.log(k,v);

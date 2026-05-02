@@ -1,0 +1,1 @@
+fun main(){ val input=generateSequence(::readLine).joinToString(" "); val n=input.trim().split(Regex("\\s+")).firstOrNull()?.toIntOrNull() ?: 42; println(n.toString(2)); println(n.toString(16).uppercase()); }

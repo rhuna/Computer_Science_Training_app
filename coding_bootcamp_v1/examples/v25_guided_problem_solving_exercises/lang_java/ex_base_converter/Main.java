@@ -1,0 +1,1 @@
+import java.util.*; public class Main{ public static void main(String[]a){ Scanner s=new Scanner(System.in); int n=s.hasNextInt()?s.nextInt():42; System.out.println(Integer.toBinaryString(n)); System.out.println(Integer.toHexString(n).toUpperCase()); }}

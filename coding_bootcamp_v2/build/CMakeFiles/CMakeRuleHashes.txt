@@ -1,0 +1,4 @@
+# Hashes of file build rules.
+13ca647ab6c45560e07e40c953916c20 CMakeFiles/CSBootcampDesktop_autogen
+fbc9b8697069576e533b7826ffcc6792 CSBootcampDesktop_autogen/EWIEGA46WW/qrc_resources.cpp
+9bee19aa4080e8f701dac938f3e5db64 CSBootcampDesktop_autogen/timestamp

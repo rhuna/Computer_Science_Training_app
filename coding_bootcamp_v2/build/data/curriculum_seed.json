@@ -1,0 +1,41 @@
+{
+  "app": "CS Bootcamp Desktop",
+  "version": "19.0.0",
+  "focus": "Advanced Learning Extension with senior-level CS topics, distributed systems, compilers, database internals, performance engineering, advanced security, AI systems, and architecture case studies",
+  "language_tracks": [
+    "C++",
+    "Python",
+    "JavaScript",
+    "TypeScript",
+    "Java",
+    "C#",
+    "Go",
+    "Rust",
+    "SQL",
+    "Kotlin"
+  ],
+  "latest_feature": "Advanced Learning Extension",
+  "runtime_database": "progress_v19.sqlite",
+  "advanced_domains": [
+    "Advanced algorithms",
+    "Systems and OS internals",
+    "Database internals",
+    "Distributed systems",
+    "Compilers and language implementation",
+    "Performance engineering",
+    "Advanced architecture",
+    "Advanced security engineering",
+    "AI/data/RAG systems",
+    "Engineering leadership artifacts"
+  ],
+  "advanced_case_studies": [
+    "Tiny database engine",
+    "Distributed job queue",
+    "Compiler/interpreter lab",
+    "High-performance API service",
+    "Secure auth system",
+    "AI/RAG document system",
+    "Open-world simulation subsystem"
+  ],
+  "completion_target": "v19 plus optional v20-v23 advanced hardening"
+}

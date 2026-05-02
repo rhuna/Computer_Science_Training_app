@@ -1,0 +1,1 @@
+using System; class Program { static void Main(){ var t=Console.In.ReadToEnd().Split((char[])null,StringSplitOptions.RemoveEmptyEntries); int n=t.Length>0?int.Parse(t[0]):42; Console.WriteLine(Convert.ToString(n,2)); Console.WriteLine(n.ToString("X")); } }
